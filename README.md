@@ -51,6 +51,25 @@ A complete, extensible gardening simulation game engineered with **Godot Engine 
 
 ---
 
+## 🦋 Visiting Wildlife & Biodiversity Sanctuary
+
+The garden now attracts visiting creatures based on time of day, weather, and floral biodiversity:
+
+### 1. Visiting Butterflies
+* **Species:** Monarch (Orange), Blue Morpho (Azure), and Swallowtail (Yellow).
+* **Behavior:** Flutters gently into the garden during sunny daytime hours (8:00 AM – 6:00 PM). Attracted to blooming flowers (Lily, Poppy, Marigold, Lavender, Violet).
+* **Ecological Benefit:** Perches on mature blooms to sip nectar, creating a **Pollination Aura** that increases adjacent flower hybridization chance by **+15% to +20%**!
+
+### 2. Visiting Songbirds
+* **Species:** European Robin (warm red breast) and Eastern Bluebird (azure plumage).
+* **Behavior:** Arrive in the early morning (6:00 AM – 11:00 AM) and late afternoon (3:00 PM – 6:00 PM). Lands on soil beds to hop around and peck for earthworms.
+* **Ecological Benefit:**
+  * Occasionally unearths and gifts the player **wild starter seed packets**.
+  * Pecks away harmful slugs, hornworms, and weeds.
+  * Startles and takes flight into the canopy if approached too quickly by the player.
+
+---
+
 ## 🧬 Cross-Pollination & Hybridization Mechanics
 
 When two mature compatible parent flowers or herbs are planted adjacent to each other:
