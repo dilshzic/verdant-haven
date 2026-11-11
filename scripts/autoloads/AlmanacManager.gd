@@ -1,12 +1,8 @@
 extends Node
 
-# Dictionary of all plant definitions in the game
 var plant_catalog: Dictionary = {}
-
-# Tracking discoveries: plant_id -> {"discovered": bool, "times_harvested": int}
 var discoveries: Dictionary = {}
 
-# Hybrid recipes: [parentA, parentB] -> result_id
 var hybrid_recipes: Array[Dictionary] = [
 	{
 		"parent_a": "azure_lily",
@@ -42,12 +38,15 @@ func register_all_plants() -> void:
 			"name": "Crisp Carrot",
 			"scientific": "Daucus carota",
 			"category": "Vegetable",
-			"desc": "Crisp, sweet, and nutritious taproot. Grows quickly and thrives in well-tilled soil.",
+			"desc": "Crisp taproot. Thrives in moderate sun and evenly hydrated soil.",
+			"sunlight": "Full Sun",
+			"water_req_str": "Moderate (40-70%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 10,
 			"sell_price": 24,
 			"grow_hours": [6.0, 10.0, 12.0],
 			"regrows": false,
-			"water_req": 0.8,
 			"companion": "Boosts adjacent potato growth"
 		},
 		{
@@ -55,12 +54,15 @@ func register_all_plants() -> void:
 			"name": "Ruby Radish",
 			"scientific": "Raphanus sativus",
 			"category": "Vegetable",
-			"desc": "An ultra-fast growing peppery bulb. Great for quick revenue.",
+			"desc": "Ultra-fast growing peppery bulb. Flexible with light and moisture.",
+			"sunlight": "Partial Shade",
+			"water_req_str": "Low-Moderate (30-60%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 8,
 			"sell_price": 18,
 			"grow_hours": [4.0, 6.0, 8.0],
 			"regrows": false,
-			"water_req": 0.6,
 			"companion": "Loosens soil for root vegetables"
 		},
 		{
@@ -68,12 +70,15 @@ func register_all_plants() -> void:
 			"name": "Earthbound Potato",
 			"scientific": "Solanum tuberosum",
 			"category": "Vegetable",
-			"desc": "Hearty, reliable tuber that yields bountiful harvests per seed.",
+			"desc": "Hearty tuber. Sensitive to waterlogging; absorbs surplus moisture.",
+			"sunlight": "Full Sun",
+			"water_req_str": "Moderate (40-65%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 15,
 			"sell_price": 40,
 			"grow_hours": [8.0, 14.0, 18.0],
 			"regrows": false,
-			"water_req": 0.7,
 			"companion": "Absorbs excess soil moisture"
 		},
 		{
@@ -81,26 +86,32 @@ func register_all_plants() -> void:
 			"name": "Golden Maize",
 			"scientific": "Zea mays",
 			"category": "Vegetable",
-			"desc": "Towering stalk producing sweet golden cobs. Requires high moisture.",
+			"desc": "Towering stalk that hungers for direct sun. Casts a cooling companion shadow!",
+			"sunlight": "Full Sun",
+			"water_req_str": "High (60-90%)",
+			"casts_shade": true, # Tall companion shade!
+			"scorch_prone": false,
 			"seed_price": 25,
 			"sell_price": 70,
 			"grow_hours": [12.0, 18.0, 24.0],
 			"regrows": false,
-			"water_req": 1.2,
-			"companion": "Provides shade for delicate herbs"
+			"companion": "Casts protective shade for delicate herbs"
 		},
 		{
 			"id": "giant_pumpkin",
 			"name": "Cinnamon Pumpkin",
 			"scientific": "Cucurbita maxima",
 			"category": "Vegetable",
-			"desc": "Heavy, aromatic autumnal gourd. Takes long to mature but commands a king's ransom.",
+			"desc": "Heavy autumn gourd. Broad canopy leaves shade soil and suppress weeds.",
+			"sunlight": "Full Sun",
+			"water_req_str": "High (65-90%)",
+			"casts_shade": true,
+			"scorch_prone": false,
 			"seed_price": 40,
 			"sell_price": 130,
 			"grow_hours": [16.0, 26.0, 36.0],
 			"regrows": false,
-			"water_req": 1.4,
-			"companion": "Broad leaves smother nearby weeds"
+			"companion": "Broad leaves shade soil and smother weeds"
 		},
 
 		# Fruits (Regrowing perennials)
@@ -109,13 +120,16 @@ func register_all_plants() -> void:
 			"name": "Sweet Dewberry",
 			"scientific": "Fragaria vesca",
 			"category": "Fruit",
-			"desc": "Plump crimson berries that continue regrowing every 2 days after first harvest.",
+			"desc": "Continuous regrowing berries. Benefits from straw mulch to keep berries clean.",
+			"sunlight": "Full Sun",
+			"water_req_str": "Moderate-High (50-80%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 30,
 			"sell_price": 35,
 			"grow_hours": [10.0, 16.0, 20.0],
 			"regrows": true,
 			"regrow_hours": 14.0,
-			"water_req": 0.9,
 			"companion": "Attracts friendly pollinators"
 		},
 		{
@@ -123,13 +137,16 @@ func register_all_plants() -> void:
 			"name": "Vine Cherry Tomato",
 			"scientific": "Solanum lycopersicum",
 			"category": "Fruit",
-			"desc": "Vigorous vine clusters bursting with sweet, sun-warmed cherry tomatoes.",
+			"desc": "Vigorous vine clusters. Needs warm sun and consistent deep watering.",
+			"sunlight": "Full Sun",
+			"water_req_str": "Moderate (50-75%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 28,
 			"sell_price": 32,
 			"grow_hours": [9.0, 15.0, 18.0],
 			"regrows": true,
 			"regrow_hours": 12.0,
-			"water_req": 1.0,
 			"companion": "Pairs with Marigold to deter hornworms"
 		},
 		{
@@ -137,13 +154,16 @@ func register_all_plants() -> void:
 			"name": "Indigo Bush Berry",
 			"scientific": "Vaccinium corymbosum",
 			"category": "Fruit",
-			"desc": "Tart, anthocyanin-rich berries. Thrives in rich, fertile organic matter.",
+			"desc": "Tart berries. Prefers dappled sunlight and organic mulched moisture.",
+			"sunlight": "Partial Shade",
+			"water_req_str": "Moderate-High (55-80%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 35,
 			"sell_price": 42,
 			"grow_hours": [12.0, 20.0, 24.0],
 			"regrows": true,
 			"regrow_hours": 16.0,
-			"water_req": 0.9,
 			"companion": "Enriches soil with micro-nutrients"
 		},
 		{
@@ -151,12 +171,15 @@ func register_all_plants() -> void:
 			"name": "Solar Honeydew",
 			"scientific": "Cucumis melo",
 			"category": "Fruit",
-			"desc": "Golden melon with nectar-like sweetness. Needs plenty of warmth and sun.",
+			"desc": "Golden melon. Requires intense midday sun to synthesize sweet nectar sugars.",
+			"sunlight": "Full Sun",
+			"water_req_str": "High (60-85%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 45,
 			"sell_price": 145,
 			"grow_hours": [14.0, 22.0, 30.0],
 			"regrows": false,
-			"water_req": 1.1,
 			"companion": "Loves companionship with herbs"
 		},
 
@@ -166,13 +189,16 @@ func register_all_plants() -> void:
 			"name": "Fragrant Lavender",
 			"scientific": "Lavandula angustifolia",
 			"category": "Herb",
-			"desc": "Silver-green spires topped with soothing purple florets. Cherished by bees.",
+			"desc": "Silver-green spires. Highly drought-tolerant; hates waterlogged soil.",
+			"sunlight": "Full Sun",
+			"water_req_str": "Low-Moderate (25-50%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 20,
 			"sell_price": 48,
 			"grow_hours": [8.0, 14.0, 18.0],
 			"regrows": true,
 			"regrow_hours": 10.0,
-			"water_req": 0.6,
 			"companion": "Calming aura accelerates adjacent flower blooming"
 		},
 		{
@@ -180,13 +206,16 @@ func register_all_plants() -> void:
 			"name": "Brisk Peppermint",
 			"scientific": "Mentha piperita",
 			"category": "Herb",
-			"desc": "Invigorating herb with crisp serrated leaves. Naturally resistant to cold.",
+			"desc": "Crisp refreshing herb. Loves damp partial shade beneath tall crops.",
+			"sunlight": "Partial Shade",
+			"water_req_str": "Moderate-High (50-80%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 16,
 			"sell_price": 36,
 			"grow_hours": [6.0, 10.0, 14.0],
 			"regrows": true,
 			"regrow_hours": 8.0,
-			"water_req": 0.8,
 			"companion": "Spreads brisk mint scent that repels pests"
 		},
 		{
@@ -194,27 +223,33 @@ func register_all_plants() -> void:
 			"name": "Sun Chamomile",
 			"scientific": "Matricaria chamomilla",
 			"category": "Herb",
-			"desc": "Daisy-like blossoms with apple scent. Brews into calming restorative tea.",
+			"desc": "Daisy-like blossoms. Heals neighbors from heat stress and sun scorch.",
+			"sunlight": "Full Sun",
+			"water_req_str": "Moderate (40-70%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 18,
 			"sell_price": 42,
 			"grow_hours": [6.0, 11.0, 15.0],
 			"regrows": false,
-			"water_req": 0.7,
-			"companion": "Heals adjacent sick or dehydrated crops"
+			"companion": "Restores adjacent heat-stressed or parched crops"
 		},
 
-		# Flowers & Ornamentals
+		# Flowers
 		{
 			"id": "scarlet_poppy",
 			"name": "Scarlet Poppy",
 			"scientific": "Papaver rhoeas",
 			"category": "Flower",
-			"desc": "Silk-thin scarlet petals around a dark center. Hybridization parent plant.",
+			"desc": "Silk-thin scarlet petals. Basks in bright sun; crossbreeding parent.",
+			"sunlight": "Full Sun",
+			"water_req_str": "Low-Moderate (30-60%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 15,
 			"sell_price": 38,
 			"grow_hours": [7.0, 12.0, 16.0],
 			"regrows": false,
-			"water_req": 0.7,
 			"companion": "Produces pollen that triggers hybrid mutations"
 		},
 		{
@@ -222,12 +257,15 @@ func register_all_plants() -> void:
 			"name": "Azure Star Lily",
 			"scientific": "Lilium caeruleum",
 			"category": "Flower",
-			"desc": "Striking sapphire-tinted petals that shimmer under morning dew.",
+			"desc": "Sapphire-tinted petals. Flourishes in morning sun with shaded roots.",
+			"sunlight": "Partial Shade",
+			"water_req_str": "Moderate (45-75%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 22,
 			"sell_price": 55,
 			"grow_hours": [8.0, 14.0, 18.0],
 			"regrows": false,
-			"water_req": 0.8,
 			"companion": "Increases beauty score and butterfly visits"
 		},
 		{
@@ -235,12 +273,15 @@ func register_all_plants() -> void:
 			"name": "Golden Marigold",
 			"scientific": "Tagetes patula",
 			"category": "Flower",
-			"desc": "Dense golden pompom petals. Famous natural repellent for all garden pests.",
+			"desc": "Golden pompom petals. Loves intense heat and sunshine.",
+			"sunlight": "Full Sun",
+			"water_req_str": "Low-Moderate (30-60%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 14,
 			"sell_price": 34,
 			"grow_hours": [6.0, 10.0, 14.0],
 			"regrows": false,
-			"water_req": 0.6,
 			"companion": "Completely repels weeds in 1-tile radius"
 		},
 
@@ -250,12 +291,15 @@ func register_all_plants() -> void:
 			"name": "Moonlit Violet",
 			"scientific": "Viola nocturna",
 			"category": "Hybrid",
-			"desc": "Rare hybrid born from Azure Lily and Peppermint. Petals faintly glow at twilight.",
+			"desc": "Rare hybrid. Avoids harsh midday sun; petals store twilight luminescence.",
+			"sunlight": "Partial Shade",
+			"water_req_str": "Moderate (45-75%)",
+			"casts_shade": false,
+			"scorch_prone": true,
 			"seed_price": 60,
 			"sell_price": 160,
 			"grow_hours": [12.0, 20.0, 26.0],
 			"regrows": false,
-			"water_req": 0.9,
 			"companion": "Emits faint moonlight that allows night growth"
 		},
 		{
@@ -263,12 +307,15 @@ func register_all_plants() -> void:
 			"name": "Solar Flare Dahlia",
 			"scientific": "Dahlia ignis",
 			"category": "Hybrid",
-			"desc": "Radiant explosion of orange and yellow petals born from Poppy and Marigold.",
+			"desc": "Radiant fiery petals. Thrives on maximum solar radiation.",
+			"sunlight": "Full Sun",
+			"water_req_str": "Moderate-High (50-80%)",
+			"casts_shade": false,
+			"scorch_prone": false,
 			"seed_price": 75,
 			"sell_price": 195,
 			"grow_hours": [14.0, 22.0, 30.0],
 			"regrows": false,
-			"water_req": 1.0,
 			"companion": "Warms adjacent tiles, protecting against frost"
 		},
 		{
@@ -276,28 +323,34 @@ func register_all_plants() -> void:
 			"name": "Twilight Orchid",
 			"scientific": "Orchis crepusculum",
 			"category": "Hybrid",
-			"desc": "Extremely rare botanical wonder. Crossbred from Lavender and Moonlit Violet.",
+			"desc": "Master botanical jewel. Requires gentle dappled shade and precise hydration.",
+			"sunlight": "Partial Shade",
+			"water_req_str": "Moderate (50-70%)",
+			"casts_shade": false,
+			"scorch_prone": true,
 			"seed_price": 120,
 			"sell_price": 350,
 			"grow_hours": [18.0, 30.0, 42.0],
 			"regrows": false,
-			"water_req": 1.2,
 			"companion": "Master flora: doubles adjacent crop sell value"
 		},
 
-		# Magical & Exotic Flora
+		# Magical
 		{
 			"id": "chrono_fern",
 			"name": "Chrono Fern",
 			"scientific": "Osmunda temporis",
 			"category": "Magical",
-			"desc": "Mystical prehistoric fern. Whispers of time dilation speed up neighbor crops by 25%.",
+			"desc": "Prehistoric fern. Deep shade lover; scorches quickly under direct noon sun without mulch!",
+			"sunlight": "Shade Loving",
+			"water_req_str": "High (65-90%)",
+			"casts_shade": false,
+			"scorch_prone": true,
 			"seed_price": 150,
 			"sell_price": 280,
 			"grow_hours": [20.0, 32.0, 48.0],
 			"regrows": true,
 			"regrow_hours": 24.0,
-			"water_req": 1.3,
 			"companion": "Accelerates growth of all 8 surrounding plots"
 		},
 		{
@@ -305,20 +358,22 @@ func register_all_plants() -> void:
 			"name": "Bioluminescent Glowcap",
 			"scientific": "Mycena lux",
 			"category": "Magical",
-			"desc": "Ethereal teal mushroom that thrives in darkness and damp soil.",
+			"desc": "Teal mushroom. Needs cool shade and damp soil; will wither if left in blazing sun.",
+			"sunlight": "Shade Loving",
+			"water_req_str": "High (70-95%)",
+			"casts_shade": false,
+			"scorch_prone": true,
 			"seed_price": 90,
 			"sell_price": 220,
 			"grow_hours": [10.0, 18.0, 24.0],
 			"regrows": true,
 			"regrow_hours": 12.0,
-			"water_req": 1.5,
 			"companion": "Spawns beneficial fungal mycorrhizae"
 		}
 	]
 
 	for p in raw_plants:
 		plant_catalog[p["id"]] = p
-		# Starter discoveries
 		if p["id"] in ["carrot", "strawberry", "azure_lily"]:
 			discoveries[p["id"]] = {"discovered": true, "harvest_count": 0}
 		else:

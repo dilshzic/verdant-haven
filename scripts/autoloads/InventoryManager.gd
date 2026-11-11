@@ -5,12 +5,10 @@ const HOTBAR_SIZE: int = 8
 var coins: int = 150
 var active_slot: int = 0
 
-# Hotbar items array: Dictionary with keys {"id", "type", "count", "name", "icon"}
 var hotbar: Array[Dictionary] = []
-var inventory: Dictionary = {} # item_id -> count
+var inventory: Dictionary = {}
 
-# Tool upgrades
-var watering_can_level: int = 1 # 1: 1x1, 2: 1x3, 3: 3x3
+var watering_can_level: int = 1
 var hoe_level: int = 1
 
 func _ready() -> void:
@@ -34,15 +32,23 @@ func init_default_loadout() -> void:
 		"count": 1,
 		"icon_path": "res://assets/sprites/tools/watering_can.png"
 	})
-	# Slot 2: Fertilizer
+	# Slot 2: Straw Mulch (Sun & Moisture Protection)
+	hotbar.append({
+		"id": "tool_mulch",
+		"type": "tool",
+		"name": "Straw Mulch",
+		"count": 6,
+		"icon_path": "res://assets/sprites/tools/mulch.png"
+	})
+	# Slot 3: Fertilizer
 	hotbar.append({
 		"id": "tool_fertilizer",
 		"type": "tool",
 		"name": "Compost Fertilizer",
-		"count": 5,
+		"count": 4,
 		"icon_path": "res://assets/sprites/tools/fertilizer.png"
 	})
-	# Slot 3: Shears
+	# Slot 4: Shears
 	hotbar.append({
 		"id": "tool_shears",
 		"type": "tool",
@@ -50,16 +56,16 @@ func init_default_loadout() -> void:
 		"count": 1,
 		"icon_path": "res://assets/sprites/tools/shears.png"
 	})
-	# Slot 4: Starter Seeds: Carrot
+	# Slot 5: Starter Seeds: Golden Corn (Sun lover & casts shade!)
 	hotbar.append({
-		"id": "seed_carrot",
+		"id": "seed_golden_corn",
 		"type": "seed",
-		"plant_id": "carrot",
-		"name": "Carrot Seeds",
-		"count": 6,
-		"icon_path": "res://assets/sprites/plants/carrot_stage_0.png"
+		"plant_id": "golden_corn",
+		"name": "Corn Seeds",
+		"count": 4,
+		"icon_path": "res://assets/sprites/plants/golden_corn_stage_0.png"
 	})
-	# Slot 5: Starter Seeds: Strawberry
+	# Slot 6: Starter Seeds: Strawberry
 	hotbar.append({
 		"id": "seed_strawberry",
 		"type": "seed",
@@ -68,22 +74,14 @@ func init_default_loadout() -> void:
 		"count": 4,
 		"icon_path": "res://assets/sprites/plants/strawberry_stage_0.png"
 	})
-	# Slot 6: Starter Seeds: Azure Lily (Flower)
+	# Slot 7: Starter Seeds: Azure Lily
 	hotbar.append({
 		"id": "seed_azure_lily",
 		"type": "seed",
 		"plant_id": "azure_lily",
-		"name": "Azure Lily Seeds",
-		"count": 4,
+		"name": "Lily Seeds",
+		"count": 3,
 		"icon_path": "res://assets/sprites/plants/azure_lily_stage_0.png"
-	})
-	# Slot 7: Empty slot
-	hotbar.append({
-		"id": "",
-		"type": "empty",
-		"name": "Empty Slot",
-		"count": 0,
-		"icon_path": ""
 	})
 
 func set_active_slot(slot: int) -> void:
@@ -99,21 +97,19 @@ func get_active_item() -> Dictionary:
 func consume_active_item() -> void:
 	if active_slot < hotbar.size():
 		var it = hotbar[active_slot]
-		if it["type"] in ["seed", "fertilizer"]:
+		if it["type"] in ["seed", "fertilizer"] or it["id"] == "tool_mulch":
 			it["count"] -= 1
 			if it["count"] <= 0:
 				hotbar[active_slot] = {"id": "", "type": "empty", "name": "Empty Slot", "count": 0, "icon_path": ""}
 			SignalBus.inventory_changed.emit()
 
 func add_item(item_id: String, item_type: String, item_name: String, count: int, icon_path: String, plant_id: String = "") -> bool:
-	# Try stacking in hotbar first
 	for slot in hotbar:
 		if slot["id"] == item_id and slot["type"] == item_type:
 			slot["count"] += count
 			SignalBus.inventory_changed.emit()
 			return true
 			
-	# Find empty hotbar slot
 	for i in range(hotbar.size()):
 		if hotbar[i]["type"] == "empty":
 			hotbar[i] = {
@@ -127,7 +123,6 @@ func add_item(item_id: String, item_type: String, item_name: String, count: int,
 			SignalBus.inventory_changed.emit()
 			return true
 			
-	# Else store in backup inventory dictionary
 	if inventory.has(item_id):
 		inventory[item_id] += count
 	else:

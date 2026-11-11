@@ -54,7 +54,7 @@ func _on_plant_selected(index: int) -> void:
 		detail_category.text = "Category: " + p["category"]
 		detail_desc.text = "Cultivate or crossbreed this plant in your garden plots to discover its botanical properties and journal entries."
 		detail_stats.text = "Growth: ??? hrs | Value: ??? G"
-		detail_companion.text = "Companion Synergy: ???"
+		detail_companion.text = "Sunlight: ??? | Water: ???"
 		return
 		
 	detail_name.text = p["name"]
@@ -64,8 +64,14 @@ func _on_plant_selected(index: int) -> void:
 	
 	var total_hours = p["grow_hours"][0] + p["grow_hours"][1] + p["grow_hours"][2]
 	var regrow_str = " (Regrows every %d hrs)" % p["regrow_hours"] if p.get("regrows", false) else " (Single Harvest)"
-	detail_stats.text = "Growth Time: ~%d hrs%s\nMarket Value: %d G | Seed Cost: %d G" % [int(total_hours), regrow_str, p["sell_price"], p["seed_price"]]
-	detail_companion.text = "Synergy Perk: " + p["companion"]
+	var sun_info = p.get("sunlight", "Full Sun")
+	var water_info = p.get("water_req_str", "Moderate")
+	var shade_cast = " [Casts Companion Shade]" if p.get("casts_shade", false) else ""
+	
+	detail_stats.text = "Growth: ~%d hrs%s | Value: %d G\nSunlight: %s%s | Ideal Water: %s" % [
+		int(total_hours), regrow_str, p["sell_price"], sun_info, shade_cast, water_info
+	]
+	detail_companion.text = "Synergy: " + p["companion"]
 	
 	var icon_path = "res://assets/sprites/plants/%s_stage_3.png" % pid
 	if ResourceLoader.exists(icon_path):

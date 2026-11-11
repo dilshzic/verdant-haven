@@ -23,22 +23,28 @@ func populate_shop_items() -> void:
 	for c in items_container.get_children():
 		c.queue_free()
 		
-	# 1. Offer Organic Fertilizer
+	# 1. Straw Mulch (Sunlight & Moisture protection)
+	create_shop_row("Straw Mulch (x5)", "Insulates soil, cuts water evaporation by 60%, prevents sun scorch", 15, "tool_mulch", "res://assets/sprites/tools/mulch.png", func():
+		if InventoryManager.spend_coins(15):
+			InventoryManager.add_item("tool_mulch", "tool", "Straw Mulch", 5, "res://assets/sprites/tools/mulch.png")
+			SignalBus.notification_posted.emit("Purchased 5 Straw Mulch bundles!", Color(0.9, 0.8, 0.2))
+	)
+
+	# 2. Organic Fertilizer
 	create_shop_row("Fertilizer Compost (x5)", "Boosts soil fertility and growth rate", 20, "tool_fertilizer", "res://assets/sprites/tools/fertilizer.png", func():
 		if InventoryManager.spend_coins(20):
 			InventoryManager.add_item("tool_fertilizer", "tool", "Compost Fertilizer", 5, "res://assets/sprites/tools/fertilizer.png")
 			SignalBus.notification_posted.emit("Purchased 5 Compost Fertilizers!", Color(0.9, 0.8, 0.2))
 	)
 
-	# 2. Offer seeds for all base plants
+	# 3. Base Plant Seeds
 	for plant_id in AlmanacManager.plant_catalog.keys():
 		var p = AlmanacManager.plant_catalog[plant_id]
-		# Do not sell rare hybrids in the normal shop (must be crossbred!)
 		if p["category"] == "Hybrid":
 			continue
 			
 		var p_name = p["name"] + " Seeds"
-		var p_desc = "%s (%s) - Takes ~%d hrs" % [p["desc"], p["category"], int(p["grow_hours"][0] + p["grow_hours"][1] + p["grow_hours"][2])]
+		var p_desc = "%s (%s) • %s • %s" % [p["desc"], p["category"], p["sunlight"], p["water_req_str"]]
 		var p_cost = p["seed_price"]
 		var icon_p = "res://assets/sprites/plants/%s_stage_0.png" % plant_id
 		var pid = plant_id
@@ -53,7 +59,6 @@ func create_shop_row(title: String, desc: String, cost: int, _item_id: String, i
 	var row = HBoxContainer.new()
 	row.custom_minimum_size = Vector2(0, 50)
 	
-	# Icon
 	if ResourceLoader.exists(icon_path):
 		var icon_rect = TextureRect.new()
 		icon_rect.texture = load(icon_path)
@@ -61,7 +66,6 @@ func create_shop_row(title: String, desc: String, cost: int, _item_id: String, i
 		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		row.add_child(icon_rect)
 		
-	# Text info
 	var vbox = VBoxContainer.new()
 	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var lbl_title = Label.new()
@@ -73,7 +77,6 @@ func create_shop_row(title: String, desc: String, cost: int, _item_id: String, i
 	vbox.add_child(lbl_desc)
 	row.add_child(vbox)
 	
-	# Buy button
 	var btn = Button.new()
 	btn.text = "Buy (%d G)" % cost
 	btn.custom_minimum_size = Vector2(100, 36)
