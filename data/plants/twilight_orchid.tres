@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PlantData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PlantData.gd" id="1_pdata"]
+
+[resource]
+script = ExtResource("1_pdata")
+plant_id = "twilight_orchid"
+plant_name = "Twilight Orchid"
+scientific_name = "Orchis crepusculum"
+description = "Crown jewel hybrid."
+category = 4
+seed_cost = 120
+harvest_sell_price = 350
+growth_stage_hours = [18.0, 30.0, 42.0]
+regrows_after_harvest = false
+companion_tag = "Doubles adjacent harvest value"

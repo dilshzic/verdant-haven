@@ -1,0 +1,286 @@
+[gd_scene load_steps=10 format=3 uid="uid://cgameworld001"]
+
+[ext_resource type="Script" path="res://scripts/gameplay/GardenGrid.gd" id="1_grid"]
+[ext_resource type="Script" path="res://scripts/gameplay/DayNightCanvas.gd" id="2_daynight"]
+[ext_resource type="PackedScene" path="res://scenes/entities/Player.tscn" id="3_player"]
+[ext_resource type="Script" path="res://scripts/ui/HUD.gd" id="4_hud"]
+[ext_resource type="Script" path="res://scripts/ui/HotbarUI.gd" id="5_hotbar"]
+[ext_resource type="Script" path="res://scripts/ui/ShopUI.gd" id="6_shop"]
+[ext_resource type="Script" path="res://scripts/ui/AlmanacUI.gd" id="7_almanac"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiles/selector.png" id="8_sel"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tools/almanac.png" id="9_alm_icon"]
+
+[node name="GameWorld" type="Node2D"]
+
+[node name="DayNightCanvas" type="CanvasModulate" parent="."]
+script = ExtResource("2_daynight")
+
+[node name="GardenGrid" type="Node2D" parent="."]
+position = Vector2(480, 230)
+script = ExtResource("1_grid")
+
+[node name="PlantsContainer" type="Node2D" parent="GardenGrid"]
+
+[node name="Selector" type="Sprite2D" parent="GardenGrid"]
+visible = false
+texture = ExtResource("8_sel")
+
+[node name="Player" parent="." node_paths=PackedStringArray("garden_grid") instance=ExtResource("3_player")]
+position = Vector2(640, 480)
+garden_grid = NodePath("../GardenGrid")
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+zoom = Vector2(2, 2)
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("4_hud")
+
+[node name="TopBar" type="Panel" parent="HUD"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 44.0
+grow_horizontal = 2
+
+[node name="TimeLabel" type="Label" parent="HUD/TopBar"]
+offset_left = 16.0
+offset_top = 10.0
+offset_right = 160.0
+offset_bottom = 34.0
+text = "06:00 AM"
+
+[node name="DateLabel" type="Label" parent="HUD/TopBar"]
+offset_left = 180.0
+offset_top = 10.0
+offset_right = 340.0
+offset_bottom = 34.0
+text = "Spring, Day 1"
+
+[node name="WeatherLabel" type="Label" parent="HUD/TopBar"]
+offset_left = 360.0
+offset_top = 10.0
+offset_right = 520.0
+offset_bottom = 34.0
+text = "Weather: Sunny"
+
+[node name="CoinsLabel" type="Label" parent="HUD/TopBar"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -220.0
+offset_top = 10.0
+offset_right = -100.0
+offset_bottom = 34.0
+grow_horizontal = 0
+text = "🪙 150 G"
+horizontal_alignment = 2
+
+[node name="ShopBtn" type="Button" parent="HUD/TopBar"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -90.0
+offset_top = 6.0
+offset_right = -10.0
+offset_bottom = 38.0
+grow_horizontal = 0
+text = "🛒 Shop"
+
+[node name="AlmanacBtn" type="Button" parent="HUD/TopBar"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -180.0
+offset_top = 6.0
+offset_right = -96.0
+offset_bottom = 38.0
+grow_horizontal = 0
+text = "📖 Almanac"
+
+[node name="NotificationContainer" type="VBoxContainer" parent="HUD"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -180.0
+offset_right = 380.0
+offset_bottom = -80.0
+grow_vertical = 0
+
+[node name="HotbarUI" type="Control" parent="HUD"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -240.0
+offset_top = -68.0
+offset_right = 240.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("5_hotbar")
+
+[node name="SlotsContainer" type="HBoxContainer" parent="HUD/HotbarUI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="ShopModal" type="Control" parent="HUD"]
+visible = false
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -220.0
+offset_right = 300.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("6_shop")
+
+[node name="Panel" type="Panel" parent="HUD/ShopModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="HUD/ShopModal/Panel"]
+offset_left = 20.0
+offset_top = 15.0
+offset_right = 250.0
+offset_bottom = 40.0
+text = "🌱 Botanical Seed & Supply Merchant"
+
+[node name="BalanceLabel" type="Label" parent="HUD/ShopModal/Panel"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -220.0
+offset_top = 15.0
+offset_right = -60.0
+offset_bottom = 40.0
+grow_horizontal = 0
+text = "Available: 150 G"
+
+[node name="CloseButton" type="Button" parent="HUD/ShopModal/Panel"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -45.0
+offset_top = 12.0
+offset_right = -15.0
+offset_bottom = 40.0
+grow_horizontal = 0
+text = "✕"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HUD/ShopModal/Panel"]
+offset_left = 20.0
+offset_top = 50.0
+offset_right = 580.0
+offset_bottom = 420.0
+
+[node name="ItemsContainer" type="VBoxContainer" parent="HUD/ShopModal/Panel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AlmanacModal" type="Control" parent="HUD"]
+visible = false
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -240.0
+offset_right = 350.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_almanac")
+
+[node name="Panel" type="Panel" parent="HUD/AlmanacModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="HUD/AlmanacModal/Panel"]
+offset_left = 20.0
+offset_top = 15.0
+offset_right = 250.0
+offset_bottom = 40.0
+text = "📖 The Grand Botanical Almanac & Field Guide"
+
+[node name="CloseButton" type="Button" parent="HUD/AlmanacModal/Panel"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -45.0
+offset_top = 12.0
+offset_right = -15.0
+offset_bottom = 40.0
+grow_horizontal = 0
+text = "✕"
+
+[node name="HSplit" type="HSplitContainer" parent="HUD/AlmanacModal/Panel"]
+offset_left = 20.0
+offset_top = 50.0
+offset_right = 680.0
+offset_bottom = 460.0
+
+[node name="PlantList" type="ItemList" parent="HUD/AlmanacModal/Panel/HSplit"]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+
+[node name="DetailVBox" type="VBoxContainer" parent="HUD/AlmanacModal/Panel/HSplit"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NameLabel" type="Label" parent="HUD/AlmanacModal/Panel/HSplit/DetailVBox"]
+layout_mode = 2
+text = "Plant Name"
+
+[node name="ScientificLabel" type="Label" parent="HUD/AlmanacModal/Panel/HSplit/DetailVBox"]
+layout_mode = 2
+text = "Scientific Name"
+
+[node name="CategoryLabel" type="Label" parent="HUD/AlmanacModal/Panel/HSplit/DetailVBox"]
+layout_mode = 2
+text = "Category: Vegetable"
+
+[node name="PlantIcon" type="TextureRect" parent="HUD/AlmanacModal/Panel/HSplit/DetailVBox"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("9_alm_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DescLabel" type="RichTextLabel" parent="HUD/AlmanacModal/Panel/HSplit/DetailVBox"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+text = "Detailed botanical description and care guidelines."
+
+[node name="StatsLabel" type="Label" parent="HUD/AlmanacModal/Panel/HSplit/DetailVBox"]
+layout_mode = 2
+text = "Growth: ~24 hrs | Value: 40 G"
+
+[node name="CompanionLabel" type="Label" parent="HUD/AlmanacModal/Panel/HSplit/DetailVBox"]
+layout_mode = 2
+text = "Companion Synergy: None"
+
+[connection signal="pressed" from="HUD/TopBar/ShopBtn" to="HUD" method="_on_shop_button_pressed"]
+[connection signal="pressed" from="HUD/TopBar/AlmanacBtn" to="HUD" method="_on_almanac_button_pressed"]

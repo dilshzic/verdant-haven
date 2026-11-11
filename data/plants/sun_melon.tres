@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PlantData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PlantData.gd" id="1_pdata"]
+
+[resource]
+script = ExtResource("1_pdata")
+plant_id = "sun_melon"
+plant_name = "Solar Honeydew"
+scientific_name = "Cucumis melo"
+description = "Golden honey melon."
+category = 1
+seed_cost = 45
+harvest_sell_price = 145
+growth_stage_hours = [14.0, 22.0, 30.0]
+regrows_after_harvest = false
+companion_tag = "Loves herb companion"

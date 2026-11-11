@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PlantData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PlantData.gd" id="1_pdata"]
+
+[resource]
+script = ExtResource("1_pdata")
+plant_id = "carrot"
+plant_name = "Crisp Carrot"
+scientific_name = "Daucus carota"
+description = "Crisp, sweet taproot."
+category = 0
+seed_cost = 10
+harvest_sell_price = 24
+growth_stage_hours = [6.0, 10.0, 12.0]
+regrows_after_harvest = false
+companion_tag = "Boosts adjacent potato growth"

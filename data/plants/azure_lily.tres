@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PlantData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PlantData.gd" id="1_pdata"]
+
+[resource]
+script = ExtResource("1_pdata")
+plant_id = "azure_lily"
+plant_name = "Azure Star Lily"
+scientific_name = "Lilium caeruleum"
+description = "Sapphire star petals."
+category = 3
+seed_cost = 22
+harvest_sell_price = 55
+growth_stage_hours = [8.0, 14.0, 18.0]
+regrows_after_harvest = false
+companion_tag = "Boosts garden beauty"

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PlantData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PlantData.gd" id="1_pdata"]
+
+[resource]
+script = ExtResource("1_pdata")
+plant_id = "strawberry"
+plant_name = "Sweet Dewberry"
+scientific_name = "Fragaria vesca"
+description = "Continuous regrowing berries."
+category = 1
+seed_cost = 30
+harvest_sell_price = 35
+growth_stage_hours = [10.0, 16.0, 20.0]
+regrows_after_harvest = true
+companion_tag = "Attracts pollinators"

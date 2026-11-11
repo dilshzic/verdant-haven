@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PlantData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PlantData.gd" id="1_pdata"]
+
+[resource]
+script = ExtResource("1_pdata")
+plant_id = "blueberry"
+plant_name = "Indigo Bush Berry"
+scientific_name = "Vaccinium corymbosum"
+description = "Antioxidant blue berries."
+category = 1
+seed_cost = 35
+harvest_sell_price = 42
+growth_stage_hours = [12.0, 20.0, 24.0]
+regrows_after_harvest = true
+companion_tag = "Enriches soil minerals"

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PlantData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PlantData.gd" id="1_pdata"]
+
+[resource]
+script = ExtResource("1_pdata")
+plant_id = "chrono_fern"
+plant_name = "Chrono Fern"
+scientific_name = "Osmunda temporis"
+description = "Mystic time dilation."
+category = 5
+seed_cost = 150
+harvest_sell_price = 280
+growth_stage_hours = [20.0, 32.0, 48.0]
+regrows_after_harvest = true
+companion_tag = "+25% speed to neighbor tiles"

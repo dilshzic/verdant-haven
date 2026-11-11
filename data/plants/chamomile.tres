@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PlantData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PlantData.gd" id="1_pdata"]
+
+[resource]
+script = ExtResource("1_pdata")
+plant_id = "chamomile"
+plant_name = "Sun Chamomile"
+scientific_name = "Matricaria chamomilla"
+description = "Calming medicinal blossoms."
+category = 2
+seed_cost = 18
+harvest_sell_price = 42
+growth_stage_hours = [6.0, 11.0, 15.0]
+regrows_after_harvest = false
+companion_tag = "Restores parched crops"

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PlantData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PlantData.gd" id="1_pdata"]
+
+[resource]
+script = ExtResource("1_pdata")
+plant_id = "giant_pumpkin"
+plant_name = "Cinnamon Pumpkin"
+scientific_name = "Cucurbita maxima"
+description = "Giant autumn squash."
+category = 0
+seed_cost = 40
+harvest_sell_price = 130
+growth_stage_hours = [16.0, 26.0, 36.0]
+regrows_after_harvest = false
+companion_tag = "Suppresses weed growth"
