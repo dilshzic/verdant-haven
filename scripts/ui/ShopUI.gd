@@ -30,7 +30,14 @@ func populate_shop_items() -> void:
 			SignalBus.notification_posted.emit("Purchased 5 Straw Mulch bundles!", Color(0.9, 0.8, 0.2))
 	)
 
-	# 2. Organic Fertilizer
+	# 2. Fish Food Flakes Canister
+	create_shop_row("Nutritional Fish Food (x5)", "Feed outdoor Koi & Minnows for happy splashes, pearls & coins", 12, "tool_fish_food", "res://assets/sprites/pond/fish_food.png", func():
+		if InventoryManager.spend_coins(12):
+			InventoryManager.add_item("tool_fish_food", "tool", "Fish Food", 5, "res://assets/sprites/pond/fish_food.png")
+			SignalBus.notification_posted.emit("Purchased 5 Fish Food canisters!", Color(1.0, 0.7, 0.3))
+	)
+
+	# 3. Organic Fertilizer
 	create_shop_row("Fertilizer Compost (x5)", "Boosts soil fertility and growth rate", 20, "tool_fertilizer", "res://assets/sprites/tools/fertilizer.png", func():
 		if InventoryManager.spend_coins(20):
 			InventoryManager.add_item("tool_fertilizer", "tool", "Compost Fertilizer", 5, "res://assets/sprites/tools/fertilizer.png")

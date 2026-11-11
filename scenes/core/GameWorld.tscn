@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://cgameworld001"]
+[gd_scene load_steps=12 format=3 uid="uid://cgameworld001"]
 
 [ext_resource type="Script" path="res://scripts/gameplay/GardenGrid.gd" id="1_grid"]
 [ext_resource type="Script" path="res://scripts/gameplay/DayNightCanvas.gd" id="2_daynight"]
@@ -10,11 +10,15 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/tiles/selector.png" id="8_sel"]
 [ext_resource type="Texture2D" path="res://assets/sprites/tools/almanac.png" id="9_alm_icon"]
 [ext_resource type="Script" path="res://scripts/gameplay/WildlifeManager.gd" id="10_wildlife"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/Pond.tscn" id="11_pond"]
 
 [node name="GameWorld" type="Node2D"]
 
 [node name="DayNightCanvas" type="CanvasModulate" parent="."]
 script = ExtResource("2_daynight")
+
+[node name="Pond" parent="." instance=ExtResource("11_pond")]
+position = Vector2(270, 280)
 
 [node name="GardenGrid" type="Node2D" parent="."]
 position = Vector2(480, 230)

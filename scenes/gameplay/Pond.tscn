@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3 uid="uid://cpond000000001"]
+
+[ext_resource type="Script" path="res://scripts/gameplay/Pond.gd" id="1_pond"]
+[ext_resource type="Texture2D" path="res://assets/sprites/pond/lilypad.png" id="2_lily"]
+[ext_resource type="Texture2D" path="res://assets/sprites/pond/lotus_flower.png" id="3_lotus"]
+[ext_resource type="Texture2D" path="res://assets/sprites/pond/frog.png" id="4_frog"]
+
+[node name="Pond" type="Node2D"]
+script = ExtResource("1_pond")
+
+[node name="WaterSurface" type="ColorRect" parent="."]
+offset_right = 160.0
+offset_bottom = 110.0
+color = Color(0.12, 0.35, 0.52, 0.85)
+
+[node name="LilyPad1" type="Sprite2D" parent="."]
+position = Vector2(35, 30)
+texture = ExtResource("2_lily")
+
+[node name="LilyPad2" type="Sprite2D" parent="."]
+position = Vector2(125, 75)
+texture = ExtResource("2_lily")
+
+[node name="LotusBlossom" type="Sprite2D" parent="."]
+position = Vector2(40, 28)
+texture = ExtResource("3_lotus")
+
+[node name="Frog" type="Sprite2D" parent="."]
+position = Vector2(125, 70)
+texture = ExtResource("4_frog")

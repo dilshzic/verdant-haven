@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://cfish000000001"]
+
+[ext_resource type="Script" path="res://scripts/gameplay/Fish.gd" id="1_fish"]
+[ext_resource type="Texture2D" path="res://assets/sprites/pond/koi_gold.png" id="2_tex"]
+
+[node name="Fish" type="Node2D"]
+script = ExtResource("1_fish")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
