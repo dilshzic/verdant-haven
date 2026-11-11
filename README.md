@@ -51,6 +51,31 @@ A complete, extensible gardening simulation game engineered with **Godot Engine 
 
 ---
 
+## 🐟 Outdoor Koi & Lotus Pond (Aquatic Sanctuary & Aquaponics)
+
+Nestled alongside the garden beds lies an **Outdoor Fish Pond & Aquatic Ecosystem**:
+
+### 1. Aquatic Life & Fish Species
+* **Golden Kohaku Koi:** Graceful orange and white koi that leaps happily when fed.
+* **Calico Sanke Koi:** Vivid tricolor pattern (crimson, ink-black, and white).
+* **Moonlit Danio:** Bioluminescent sapphire minnow that shimmers softly at dusk and night.
+* **Celestial Dragon Koi:** Rare mythical fish with flowing golden whiskers and shimmering fins.
+
+### 2. Interactions & Aquaponic Synergies
+* **🦐 Fish Feeding:**
+  * Sprinkle nutritional flakes using `tool_fish_food` or clicking the pond.
+  * Fish excitedly swim to the surface and nibble with bubbly splashes.
+  * Well-fed fish occasionally leap out of the water and gift the player **Pond Pearls** (+15 G)!
+* **🌊 Aquaponic Watering Can Refill:**
+  * Refilling your watering can directly from the fish pond charges it with **Nutrient-Rich Fish Emulsion Water**.
+  * Watering crops with pond water grants **+50% Growth Speed** and automatically enriches the soil with natural organic nitrogen!
+* **🌸 Sacred Lotus Blossom:**
+  * Floating lotus flowers bloom on the water surface and can be harvested for **60 G** and Lotus Pod seeds.
+* **🐸 Garden Frog:**
+  * Perches peacefully on the lily pad, ribbiting in the evening and snapping up garden pests before they can damage crops.
+
+---
+
 ## ☀️ Sunlight & 💧 Watering Management Systems
 
 The game features realistic microclimate dynamics balancing solar radiation and soil moisture:
