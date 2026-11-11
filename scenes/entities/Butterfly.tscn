@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://cbutterfly001"]
+
+[ext_resource type="Script" path="res://scripts/gameplay/Butterfly.gd" id="1_bfly"]
+[ext_resource type="Texture2D" path="res://assets/sprites/creatures/butterfly_orange_open.png" id="2_tex"]
+
+[node name="Butterfly" type="Node2D"]
+script = ExtResource("1_bfly")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
