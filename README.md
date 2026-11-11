@@ -51,6 +51,30 @@ A complete, extensible gardening simulation game engineered with **Godot Engine 
 
 ---
 
+## ☀️ Sunlight & 💧 Watering Management Systems
+
+The game features realistic microclimate dynamics balancing solar radiation and soil moisture:
+
+### 1. Sunlight Exposure & Solar Arc
+* **Time & Weather Arc:** Sunlight intensity rises from soft morning dawn (**6:00 AM**) to peak solar radiation at noon (**12:00 PM**), mellowing into golden twilight before night. Weather clouds (Overcast, Rainy, Mystical Fog) diffuse direct rays.
+* **Sunlight Preferences:**
+  * **Full Sun (>70% light):** Golden Maize, Sun Melon, Scarlet Poppy, Golden Marigold. Craves blazing direct sun to trigger fruit sweetness and vibrant blooms.
+  * **Partial Shade (40%–70% light):** Tomato, Strawberry, Lavender, Chamomile, Azure Lily. Balanced, resilient.
+  * **Shade Loving (10%–45% light):** Chrono Fern, Glowcap Mushroom, Peppermint. Deep shade lovers that risk heat scorch if left bare in direct noon sun!
+* **Companion Shade Canopy:** Tall crops like **Golden Maize (Corn)** and **Cinnamon Pumpkin** cast a cooling dappled shadow over neighboring plots, shielding delicate shade crops from sunburn.
+
+### 2. Hydration, Evaporation & Mulch
+* **Hydration Continuum:**
+  * **0%–15% (Bone Dry):** Drought stress. After 2 consecutive dry days, plants wither.
+  * **40%–80% (Optimal Hydration):** Plants achieve **Vibrant Vigor** (+25% to +40% growth speed).
+  * **88%–100% (Waterlogged Puddles):** Standing water. Prolonged waterlogging (>2 days) leads to root rot.
+* **🌾 Straw Mulch:** Apply straw mulch to insulate soil plots. Mulching:
+  * Reduces evaporation rate by **60%**.
+  * Completely insulates sensitive shade crops against midday sun scorching.
+  * Preserves soil fertility from leeching.
+
+---
+
 ## 🦋 Visiting Wildlife & Biodiversity Sanctuary
 
 The garden now attracts visiting creatures based on time of day, weather, and floral biodiversity:
