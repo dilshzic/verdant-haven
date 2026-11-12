@@ -137,3 +137,48 @@ When two mature compatible parent flowers or herbs are planted adjacent to each 
 * **`GardenGrid.gd`:** Grid-based soil management with tile-state tracking (untilled, tilled dry, hydrated, enriched loam, weeds).
 * **`Plant.gd`:** Node lifecycle with growth timers, visual stage transitions, juicy bounce tweens, and regrowth states.
 * **`DayNightCanvas.gd`:** `CanvasModulate` atmospheric shader smoothly tinting the world from dawn rose to noon sunlight to twilight amber and midnight indigo.
+
+---
+
+## 🌙 Relaxation, Sleep Sanctuary & Generative Absence (Mindfulness Mode)
+
+Verdant Haven is designed around the core philosophy of **Generative Absence**:
+> *"The garden should never punish you for living your real life. When you close the app, sleep, study, or meditate, nature continues to flourish peacefully in your absence."*
+
+### 1. ⏳ Real-Time Offline Growth & Dawn Dew Harvesting (`OfflineGrowthManager.gd`)
+* **Timestamp Persistence:** When closing, minimizing, or backgrounding the application (`NOTIFICATION_APPLICATION_PAUSED`), Godot records the system timestamp (`user://garden_offline_state.json`).
+* **Non-Punitive Natural Growth:**
+  * Soil moisture gently equilibrates towards a minimum morning dew floor (35%–55%), preventing drought withering while you sleep.
+  * For every hour of real-world rest, garden plants advance their growth cycle without risk of death or weeds.
+* **Overnight Starlight Blooming:**
+  * When away for $\ge 5$ hours or during real-world night hours, night-active species (**Moonlit Violet** and **Bioluminescent Glowcap**) receive a **2x growth acceleration** under starlight!
+* **✨ Dream Dew Collection:**
+  * You collect 1 Dream Dew droplet per 30 minutes of real rest (up to 24 per sleep session).
+  * Dream Dew can be spent to instantly bless dry plots, soothe stressed crops, or accelerate botanical crossbreeding.
+* **🌅 Dawn Awakening Summary:**
+  * Waking up triggers a serene morning report detailing hours rested, Dream Dew collected, crops ready for harvest, and a tranquil daily botanical wisdom quote.
+
+### 2. 🧘 Sacred Lotus Breathwork (`MindfulBreathingController.gd`)
+* **Animated Sacred Lotus:** Smoothly opens and expands on inhale, suspends with a celestial glow, and softly contracts on exhale.
+* **3 Breathing Cadences:**
+  * **Box Breathing (4-4-4-4):** Inhale 4s $\rightarrow$ Hold 4s $\rightarrow$ Exhale 4s $\rightarrow$ Rest 4s (Centers focus and lowers cortisol).
+  * **Relaxing Wind-Down (4-7-8):** Inhale 4s $\rightarrow$ Hold 7s $\rightarrow$ Exhale 8s (Activates the parasympathetic nervous system for sleep).
+  * **Heart Coherence (5-5):** Inhale 5s $\rightarrow$ Exhale 5s (Synchronizes heart rate variability and mental calm).
+* **Harmonic Tibetan Singing Bowl:** Generates warm 432 Hz and 528 Hz pure sine harmonics at each phase transition.
+* **✨ Prana Blessing:** Completing 4 breath cycles infuses the garden bed with holy prana vitality (+12 Dream Dew, cleanses weeds, and hydrates all soil to 85%).
+
+### 3. 🌙 Overnight Sleep Sanctuary (`SleepSanctuaryManager.gd`)
+* **Bedtime Intentions:** Set an evening intention (*Deep Restoration*, *Quiet Reflection*, *Release the Day*, or *Inner Calm*).
+* **Ambient Soundscapes:**
+  * 🌧️ **Nocturnal Rain:** Gentle pink noise generator with warm low-pass acoustic filtering.
+  * 🦗 **Summer Crickets:** Frequency-modulated night cicada chorus.
+  * 🥣 **432 Hz Singing Bowl:** Deep meditative drone with golden ratio overtone resonance.
+  * 🌊 **Pond Ripples:** Soft natural water bubbles and swimming koi splashes.
+* **Night Sky Overlay:** Full-screen midnight indigo tint with animated stars and a soft night clock.
+
+### 4. 🌳 Sacred Focus Grove (`FocusGroveManager.gd`)
+* **Screen-Free Companion Timer:** 15m, 25m (Pomodoro), or 50m deep work sessions.
+* **Living Bonsai Progression:** A sacred Bodhi tree grows through 5 visual stages from *Sprout of Intention* to *Sacred Golden Blossom*.
+* **Zero Guilt Guarantee:** Navigating away or taking a break will never kill or wither your tree.
+* **Compost Reward:** Completing a focus session rewards +8 Dream Dew and blesses every garden bed with rich organic compost.
+

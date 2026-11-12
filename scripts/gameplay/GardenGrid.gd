@@ -35,6 +35,10 @@ func _ready() -> void:
 	SignalBus.day_advanced.connect(_on_day_advanced)
 	SignalBus.time_ticked.connect(_on_time_ticked)
 	SignalBus.weather_changed.connect(_on_weather_changed)
+	SignalBus.garden_blessed.connect(_on_garden_blessed)
+	
+	if has_node("/root/OfflineGrowthManager"):
+		get_node("/root/OfflineGrowthManager").register_garden_grid(self)
 
 func init_grid() -> void:
 	for x in range(GRID_WIDTH):
@@ -301,3 +305,53 @@ func play_splash_fx(pos: Vector2i) -> void:
 	var s = cells[pos]["sprite"]
 	tw.tween_property(s, "scale", Vector2(1.15, 1.15), 0.1)
 	tw.tween_property(s, "scale", Vector2(1.0, 1.0), 0.15)
+
+func apply_offline_cycle(simulated_days: int, is_overnight: bool) -> Array[String]:
+	var matured_names: Array[String] = []
+	var hours_per_day = 24.0
+	var total_sim_hours = simulated_days * hours_per_day
+	
+	for pos in cells.keys():
+		var cell = cells[pos]
+		# Generative Absence: moisture gently equilibrates towards serene morning dew (min 0.35)
+		if cell["is_tilled"]:
+			cell["moisture"] = clamp(cell["moisture"] - 0.15 * simulated_days, 0.35, 1.0)
+			if is_overnight:
+				# Overnight dew provides refreshing gentle moisture
+				cell["moisture"] = max(cell["moisture"], 0.50)
+			cell["days_waterlogged"] = 0
+			cell["days_parched"] = 0
+			update_cell_visual(pos)
+			
+		if cell["plant"]:
+			var plant = cell["plant"]
+			plant.days_parched = 0 # No withering while away
+			var matured = plant.advance_offline_hours(total_sim_hours, is_overnight)
+			if matured:
+				var p_name = plant.plant_data.get("name", "Botanical Plant")
+				if not p_name in matured_names:
+					matured_names.append(p_name)
+					
+	return matured_names
+
+func _on_garden_blessed(blessing_type: String) -> void:
+	if blessing_type == "prana":
+		# Breathwork Prana Blessing: hydrates all tilled plots to 85%, clears weeds, and boosts growth
+		for pos in cells.keys():
+			var cell = cells[pos]
+			if cell["is_tilled"]:
+				cell["moisture"] = max(cell["moisture"], 0.85)
+				cell["has_weed"] = false
+				update_cell_visual(pos)
+				if cell["plant"] and not cell["plant"].is_mature:
+					cell["plant"].advance_offline_hours(6.0, false)
+		SignalBus.notification_posted.emit("✨ Garden infused with Prana Vitality! Plots hydrated and blessed.", Color(0.4, 1.0, 0.7))
+	elif blessing_type == "focus":
+		# Focus Grove Blessing: enriches all soil with fertility compost
+		for pos in cells.keys():
+			var cell = cells[pos]
+			if cell["is_tilled"]:
+				cell["is_fertilized"] = true
+				cell["fertility"] = 1.0
+				update_cell_visual(pos)
+		SignalBus.notification_posted.emit("🌱 Sacred Focus Blessing! All garden plots enriched with organic compost.", Color(0.9, 0.8, 0.3))

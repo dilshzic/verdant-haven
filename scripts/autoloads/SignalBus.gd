@@ -25,3 +25,14 @@ signal item_sold(item_id: String, gain: int)
 # Almanac & UI
 signal almanac_entry_updated(plant_id: String)
 signal notification_posted(text: String, color: Color)
+
+# Relaxation, Mindfulness & Offline Growth Signals
+signal offline_growth_processed(summary: Dictionary)
+signal dream_dew_collected(amount: int)
+signal breath_phase_changed(phase_name: String, duration_seconds: float)
+signal breath_cycle_completed(completed_cycles: int, prana_awarded: int)
+signal sleep_sanctuary_started(intention: String, timer_minutes: int)
+signal sleep_sanctuary_awakened(summary: Dictionary)
+signal focus_grove_started(duration_minutes: int)
+signal focus_grove_completed(completed_minutes: int, tree_stage: int)
+signal garden_blessed(blessing_type: String)

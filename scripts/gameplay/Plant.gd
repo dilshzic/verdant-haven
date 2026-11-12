@@ -59,6 +59,36 @@ func advance_growth_stage() -> void:
 		
 	update_sprite()
 
+func advance_offline_hours(hours: float, is_overnight: bool = false) -> bool:
+	if is_mature or is_withered:
+		return false
+		
+	var mult = growth_speed_multiplier
+	if is_overnight and (plant_id == "moonlit_violet" or plant_id == "glowcap_mushroom"):
+		mult *= 2.0 # Starlight nighttime bloom bonus!
+		
+	stage_progress_hours += hours * mult
+	var grow_durations: Array = plant_data.get("grow_hours", [6.0, 10.0, 14.0])
+	var matured_now = false
+	
+	while current_stage < grow_durations.size() and not is_mature:
+		var required = grow_durations[current_stage]
+		if stage_progress_hours >= required:
+			stage_progress_hours -= required
+			current_stage += 1
+			if current_stage >= 3:
+				current_stage = 3
+				is_mature = true
+				matured_now = true
+				break
+		else:
+			break
+			
+	update_sprite()
+	if matured_now:
+		play_mature_fx()
+	return matured_now
+
 func update_sprite() -> void:
 	if not sprite:
 		return

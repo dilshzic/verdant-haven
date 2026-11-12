@@ -18,6 +18,7 @@ SignalBus="*res://scripts/autoloads/SignalBus.gd"
 TimeManager="*res://scripts/autoloads/TimeManager.gd"
 InventoryManager="*res://scripts/autoloads/InventoryManager.gd"
 AlmanacManager="*res://scripts/autoloads/AlmanacManager.gd"
+OfflineGrowthManager="*res://scripts/autoloads/OfflineGrowthManager.gd"
 
 [display]
 

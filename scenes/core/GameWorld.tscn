@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cgameworld001"]
+[gd_scene load_steps=16 format=3 uid="uid://cgameworld001"]
 
 [ext_resource type="Script" path="res://scripts/gameplay/GardenGrid.gd" id="1_grid"]
 [ext_resource type="Script" path="res://scripts/gameplay/DayNightCanvas.gd" id="2_daynight"]
@@ -11,6 +11,10 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/tools/almanac.png" id="9_alm_icon"]
 [ext_resource type="Script" path="res://scripts/gameplay/WildlifeManager.gd" id="10_wildlife"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/Pond.tscn" id="11_pond"]
+[ext_resource type="Script" path="res://scripts/ui/BreathingModal.gd" id="12_breathe"]
+[ext_resource type="Script" path="res://scripts/ui/SleepModal.gd" id="13_sleep"]
+[ext_resource type="Script" path="res://scripts/ui/FocusModal.gd" id="14_focus"]
+[ext_resource type="Script" path="res://scripts/ui/MorningSummaryModal.gd" id="15_morning"]
 
 [node name="GameWorld" type="Node2D"]
 
@@ -78,19 +82,31 @@ text = "Weather: Sunny"
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -220.0
+offset_left = -190.0
 offset_top = 10.0
-offset_right = -100.0
+offset_right = -105.0
 offset_bottom = 34.0
 grow_horizontal = 0
 text = "🪙 150 G"
+horizontal_alignment = 2
+
+[node name="DewLabel" type="Label" parent="HUD/TopBar"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -285.0
+offset_top = 10.0
+offset_right = -195.0
+offset_bottom = 34.0
+grow_horizontal = 0
+text = "✨ 0 Dew"
 horizontal_alignment = 2
 
 [node name="ShopBtn" type="Button" parent="HUD/TopBar"]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -90.0
+offset_left = -95.0
 offset_top = 6.0
 offset_right = -10.0
 offset_bottom = 38.0
@@ -101,12 +117,45 @@ text = "🛒 Shop"
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -180.0
+offset_left = -185.0
 offset_top = 6.0
-offset_right = -96.0
+offset_right = -100.0
 offset_bottom = 38.0
 grow_horizontal = 0
 text = "📖 Almanac"
+
+[node name="FocusBtn" type="Button" parent="HUD/TopBar"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -375.0
+offset_top = 6.0
+offset_right = -295.0
+offset_bottom = 38.0
+grow_horizontal = 0
+text = "🌳 Focus"
+
+[node name="SleepBtn" type="Button" parent="HUD/TopBar"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -455.0
+offset_top = 6.0
+offset_right = -380.0
+offset_bottom = 38.0
+grow_horizontal = 0
+text = "🌙 Sleep"
+
+[node name="BreatheBtn" type="Button" parent="HUD/TopBar"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -555.0
+offset_top = 6.0
+offset_right = -460.0
+offset_bottom = 38.0
+grow_horizontal = 0
+text = "🧘 Breathe"
 
 [node name="NotificationContainer" type="VBoxContainer" parent="HUD"]
 anchors_preset = 2
@@ -292,5 +341,293 @@ text = "Growth: ~24 hrs | Value: 40 G"
 layout_mode = 2
 text = "Companion Synergy: None"
 
+[node name="BreathingModal" type="Control" parent="HUD"]
+visible = false
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -200.0
+offset_right = 260.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("12_breathe")
+
+[node name="Panel" type="Panel" parent="HUD/BreathingModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CloseBtn" type="Button" parent="HUD/BreathingModal/Panel"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = 38.0
+grow_horizontal = 0
+text = "✕"
+
+[node name="VBox" type="VBoxContainer" parent="HUD/BreathingModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="PhaseLabel" type="Label" parent="HUD/BreathingModal/Panel/VBox"]
+layout_mode = 2
+text = "MINDFUL BREATHWORK"
+horizontal_alignment = 1
+
+[node name="GuideLabel" type="Label" parent="HUD/BreathingModal/Panel/VBox"]
+layout_mode = 2
+text = "Center your awareness and follow the rhythm of the lotus."
+horizontal_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="HUD/BreathingModal/Panel/VBox"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="CyclesLabel" type="Label" parent="HUD/BreathingModal/Panel/VBox"]
+layout_mode = 2
+text = "Cycle: 1 / 4"
+horizontal_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="HUD/BreathingModal/Panel/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="StartBtn" type="Button" parent="HUD/BreathingModal/Panel/VBox/Buttons"]
+layout_mode = 2
+text = "Begin Breathwork"
+
+[node name="SleepModal" type="Control" parent="HUD"]
+visible = false
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -180.0
+offset_right = 240.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("13_sleep")
+
+[node name="Panel" type="Panel" parent="HUD/SleepModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CloseBtn" type="Button" parent="HUD/SleepModal/Panel"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = 38.0
+grow_horizontal = 0
+text = "✕"
+
+[node name="VBox" type="VBoxContainer" parent="HUD/SleepModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Title" type="Label" parent="HUD/SleepModal/Panel/VBox"]
+layout_mode = 2
+text = "🌙 Overnight Sleep Sanctuary"
+horizontal_alignment = 1
+
+[node name="SubTitle" type="Label" parent="HUD/SleepModal/Panel/VBox"]
+layout_mode = 2
+text = "Plants flourish peacefully in your absence. Morning dew rewards your rest."
+horizontal_alignment = 1
+
+[node name="SimRow" type="HBoxContainer" parent="HUD/SleepModal/Panel/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Sim1h" type="Button" parent="HUD/SleepModal/Panel/VBox/SimRow"]
+layout_mode = 2
+text = "⏳ Simulate 1h Rest"
+
+[node name="Sim8h" type="Button" parent="HUD/SleepModal/Panel/VBox/SimRow"]
+layout_mode = 2
+text = "🌙 Simulate 8h Sleep"
+
+[node name="FocusModal" type="Control" parent="HUD"]
+visible = false
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -170.0
+offset_right = 220.0
+offset_bottom = 170.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("14_focus")
+
+[node name="Panel" type="Panel" parent="HUD/FocusModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CloseBtn" type="Button" parent="HUD/FocusModal/Panel"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = 38.0
+grow_horizontal = 0
+text = "✕"
+
+[node name="VBox" type="VBoxContainer" parent="HUD/FocusModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="TimerLabel" type="Label" parent="HUD/FocusModal/Panel/VBox"]
+layout_mode = 2
+text = "25:00"
+horizontal_alignment = 1
+
+[node name="TreeLabel" type="Label" parent="HUD/FocusModal/Panel/VBox"]
+layout_mode = 2
+text = "🌱 Delicate Sprout"
+horizontal_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="HUD/FocusModal/Panel/VBox"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="ActionBtn" type="Button" parent="HUD/FocusModal/Panel/VBox"]
+layout_mode = 2
+text = "Start Focus (25m)"
+
+[node name="MorningSummaryModal" type="Control" parent="HUD"]
+visible = false
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -160.0
+offset_right = 250.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("15_morning")
+
+[node name="Panel" type="Panel" parent="HUD/MorningSummaryModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="HUD/MorningSummaryModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="HUD/MorningSummaryModal/Panel/VBox"]
+layout_mode = 2
+text = "🌅 Dawn Awakening Sanctuary"
+horizontal_alignment = 1
+
+[node name="HoursLabel" type="Label" parent="HUD/MorningSummaryModal/Panel/VBox"]
+layout_mode = 2
+text = "Time Rested: 8.0 Hours Away"
+horizontal_alignment = 1
+
+[node name="DewLabel" type="Label" parent="HUD/MorningSummaryModal/Panel/VBox"]
+layout_mode = 2
+text = "✨ Harvested 16 Dream Dew Droplets"
+horizontal_alignment = 1
+
+[node name="CropsLabel" type="Label" parent="HUD/MorningSummaryModal/Panel/VBox"]
+layout_mode = 2
+text = "Crops Ready for Harvest: Crisp Carrot, Fragrant Lavender"
+horizontal_alignment = 1
+
+[node name="QuoteLabel" type="Label" parent="HUD/MorningSummaryModal/Panel/VBox"]
+layout_mode = 2
+text = "\"In the quiet stillness of the earth, unseen roots reach deep.\""
+horizontal_alignment = 1
+
+[node name="CloseBtn" type="Button" parent="HUD/MorningSummaryModal/Panel/VBox"]
+layout_mode = 2
+text = "Collect & Tend Garden"
+
 [connection signal="pressed" from="HUD/TopBar/ShopBtn" to="HUD" method="_on_shop_button_pressed"]
 [connection signal="pressed" from="HUD/TopBar/AlmanacBtn" to="HUD" method="_on_almanac_button_pressed"]
+[connection signal="pressed" from="HUD/TopBar/BreatheBtn" to="HUD" method="_on_breathe_button_pressed"]
+[connection signal="pressed" from="HUD/TopBar/SleepBtn" to="HUD" method="_on_sleep_button_pressed"]
+[connection signal="pressed" from="HUD/TopBar/FocusBtn" to="HUD" method="_on_focus_button_pressed"]
+[connection signal="pressed" from="HUD/BreathingModal/Panel/CloseBtn" to="HUD/BreathingModal" method="_on_close_btn_pressed"]
+[connection signal="pressed" from="HUD/BreathingModal/Panel/VBox/Buttons/StartBtn" to="HUD/BreathingModal" method="_on_start_btn_pressed"]
+[connection signal="pressed" from="HUD/SleepModal/Panel/CloseBtn" to="HUD/SleepModal" method="close"]
+[connection signal="pressed" from="HUD/SleepModal/Panel/VBox/SimRow/Sim1h" to="HUD/SleepModal" method="_on_simulate_sleep_pressed" binds= [1.0]]
+[connection signal="pressed" from="HUD/SleepModal/Panel/VBox/SimRow/Sim8h" to="HUD/SleepModal" method="_on_simulate_sleep_pressed" binds= [8.0]]
+[connection signal="pressed" from="HUD/FocusModal/Panel/CloseBtn" to="HUD/FocusModal" method="_on_close_btn_pressed"]
+[connection signal="pressed" from="HUD/FocusModal/Panel/VBox/ActionBtn" to="HUD/FocusModal" method="_on_action_btn_pressed"]
+[connection signal="pressed" from="HUD/MorningSummaryModal/Panel/VBox/CloseBtn" to="HUD/MorningSummaryModal" method="_on_close_button_pressed"]
