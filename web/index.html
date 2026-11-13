@@ -1,0 +1,3405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verdant Haven: Botanical Garden & Aquatic Sanctuary</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @keyframes bounce-grow {
+      0% { transform: scale(0.6); }
+      60% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+    .animate-grow {
+      animation: bounce-grow 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 4px rgba(120, 240, 200, 0.6)); }
+      50% { opacity: 1.0; filter: drop-shadow(0 0 10px rgba(160, 255, 220, 0.9)); }
+    }
+    .glow-magic {
+      animation: pulse-glow 2s infinite ease-in-out;
+    }
+    @keyframes flutter {
+      0%, 100% { transform: scaleX(1) translateY(0); }
+      50% { transform: scaleX(0.3) translateY(-4px); }
+    }
+    .animate-flutter {
+      display: inline-block;
+      animation: flutter 0.22s infinite ease-in-out;
+    }
+    @keyframes bird-hop {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-bird-hop {
+      animation: bird-hop 0.3s ease-in-out;
+    }
+    @keyframes water-ripple {
+      0% { transform: scale(0.95); opacity: 0.6; }
+      50% { transform: scale(1.03); opacity: 0.9; }
+      100% { transform: scale(0.95); opacity: 0.6; }
+    }
+    .water-shimmer {
+      animation: water-ripple 4s infinite ease-in-out;
+    }
+    .cell-shaded::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, rgba(15, 23, 42, 0.35) 0%, rgba(15, 23, 42, 0.55) 100%);
+      pointer-events: none;
+      border-radius: 0.75rem;
+    }
+    .cell-mulched::before {
+      content: '🌾';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      font-size: 11px;
+      opacity: 0.85;
+      pointer-events: none;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased min-h-screen p-4 flex flex-col gap-4 select-none">
+
+  <!-- Header / Navigation & Game Status -->
+  <header class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-emerald-700/20 text-emerald-400 flex items-center justify-center text-2xl border border-emerald-600/30">
+        🌱
+      </div>
+      <div>
+        <h1 class="text-base font-bold tracking-tight text-[var(--foreground)]">Verdant Haven</h1>
+        <p class="text-xs text-[var(--muted-foreground)]">Botanical Garden & Outdoor Aquatic Koi Sanctuary (Godot 4)</p>
+      </div>
+    </div>
+
+    <!-- Solar, Hydration & Dream Dew Indicators -->
+    <div class="flex items-center gap-4 text-xs">
+      <div class="flex flex-col items-center">
+        <span class="text-[var(--muted-foreground)] uppercase tracking-wider text-[10px]">Season & Day</span>
+        <span id="date-display" class="font-bold text-[var(--foreground)]">Spring, Day 1</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <span class="text-[var(--muted-foreground)] uppercase tracking-wider text-[10px]">Time & Light</span>
+        <span id="time-display" class="font-bold text-[var(--foreground)] font-mono">06:00 AM</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <span class="text-[var(--muted-foreground)] uppercase tracking-wider text-[10px]">Sun Intensity</span>
+        <span id="sun-intensity-display" class="font-bold text-amber-400">☀️ 45% (Soft Dawn)</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <span class="text-[var(--muted-foreground)] uppercase tracking-wider text-[10px]">Pond & Life</span>
+        <span id="wildlife-display" class="font-bold text-cyan-400">🐟 4 Koi • 🦋 0 • 🐦 0</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <span class="text-[var(--muted-foreground)] uppercase tracking-wider text-[10px]">Coins</span>
+        <span id="coins-display" class="font-bold text-amber-300">🪙 150 G</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <span class="text-[var(--muted-foreground)] uppercase tracking-wider text-[10px]">Dream Dew</span>
+        <span id="dew-display" class="font-bold text-cyan-300">✨ 0 Dew</span>
+      </div>
+      <!-- Active Tea Buff Indicator Badge -->
+      <div id="tea-buff-badge" class="hidden flex-col items-center">
+        <span class="text-amber-400 uppercase tracking-wider text-[10px] font-bold">Active Tea</span>
+        <span id="tea-buff-text" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-950/80 text-amber-200 border border-amber-500/50 flex items-center gap-1 animate-pulse">
+          🍵 Serene Slumber
+        </span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-1.5">
+      <button id="btn-apothecary" onclick="openApothecaryModal()" class="px-2.5 py-1.5 rounded-lg bg-amber-800/70 hover:bg-amber-700/80 text-amber-200 text-xs font-semibold flex items-center gap-1 border border-amber-600/40 shadow transition-colors">
+        🍵 Apothecary
+      </button>
+      <button id="btn-breathe" onclick="openBreathingModal()" class="px-2.5 py-1.5 rounded-lg bg-teal-800/60 hover:bg-teal-700/80 text-teal-200 text-xs font-semibold flex items-center gap-1 border border-teal-600/40 shadow transition-colors">
+        🧘 Breathe
+      </button>
+      <button id="btn-sleep" onclick="openSleepModal()" class="px-2.5 py-1.5 rounded-lg bg-indigo-900/60 hover:bg-indigo-800/80 text-indigo-200 text-xs font-semibold flex items-center gap-1 border border-indigo-700/40 shadow transition-colors">
+        🌙 Sleep
+      </button>
+      <button id="btn-focus" onclick="openFocusModal()" class="px-2.5 py-1.5 rounded-lg bg-emerald-900/60 hover:bg-emerald-800/80 text-emerald-200 text-xs font-semibold flex items-center gap-1 border border-emerald-700/40 shadow transition-colors">
+        🌳 Focus
+      </button>
+
+      <!-- Fast-Forward Away / Sleep Simulator Dropdown -->
+      <div class="relative group">
+        <button class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1 border border-slate-700 shadow transition-colors">
+          ⏳ Away Sim ▾
+        </button>
+        <div class="absolute right-0 top-full mt-1 hidden group-hover:flex flex-col bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-1.5 z-50 min-w-[150px] text-xs">
+          <button onclick="simulateAwayTime(1)" class="text-left px-3 py-1.5 rounded-lg hover:bg-slate-800 text-cyan-300 font-medium">⏳ +1 Hour Nap</button>
+          <button onclick="simulateAwayTime(4)" class="text-left px-3 py-1.5 rounded-lg hover:bg-slate-800 text-teal-300 font-medium">🍃 +4 Hours Rest</button>
+          <button onclick="simulateAwayTime(8)" class="text-left px-3 py-1.5 rounded-lg hover:bg-slate-800 text-indigo-300 font-medium">🌙 +8h Night Sleep</button>
+        </div>
+      </div>
+
+      <button id="btn-almanac" class="px-2.5 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--secondary)] text-xs font-semibold flex items-center gap-1 transition-colors">
+        📖 Almanac
+      </button>
+      <button id="btn-shop" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1 shadow transition-colors">
+        🛒 Shop
+      </button>
+      <button id="btn-time-speed" class="px-2 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--secondary)] text-xs font-mono transition-colors" title="Toggle Speed">
+        ⏩ 1x
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Work Area -->
+  <main class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+    
+    <!-- Left Column: Garden & Outdoor Pond Sanctuary -->
+    <section class="lg:col-span-8 flex flex-col gap-3">
+      <!-- Garden Plot Container with Ambient Sky Tinting -->
+      <div id="sky-ambient" class="relative rounded-xl border border-[var(--border)] p-4 transition-colors duration-1000 overflow-hidden flex flex-col items-center justify-center min-h-[460px] bg-gradient-to-b from-sky-950/20 to-emerald-950/20">
+        
+        <!-- Wildlife Layer: Flying Butterflies & Visiting Birds -->
+        <div id="wildlife-layer" class="absolute inset-0 pointer-events-auto overflow-hidden z-20"></div>
+
+        <!-- Notification Toast Box -->
+        <div id="toast-container" class="absolute top-4 left-4 z-30 flex flex-col gap-1.5 pointer-events-none"></div>
+
+        <!-- Two Columns in World: Outdoor Koi Pond (West) + 8x8 Soil Grid (East) -->
+        <div class="relative z-10 flex flex-wrap md:flex-nowrap items-center justify-center gap-5 w-full">
+          
+          <!-- OUTDOOR KOI & LOTUS POND -->
+          <div class="flex flex-col items-center gap-2">
+            <div class="flex items-center justify-between w-full px-1 text-xs">
+              <span class="font-bold text-cyan-300 flex items-center gap-1.5">
+                <span>🐟</span> Outdoor Koi Pond
+              </span>
+              <span id="pond-water-clean" class="text-[10px] text-emerald-400 font-mono">Pure Spring</span>
+            </div>
+
+            <!-- Pond Basin Canvas -->
+            <div id="pond-basin" class="relative w-56 h-72 md:w-60 md:h-80 rounded-3xl bg-gradient-to-b from-sky-900 to-cyan-950 border-4 border-slate-700/80 shadow-2xl overflow-hidden cursor-pointer select-none">
+              <!-- Water ripple layer -->
+              <div class="absolute inset-0 bg-cyan-600/15 water-shimmer pointer-events-none"></div>
+              
+              <!-- Floating Lily Pads -->
+              <div id="lilypad-1" class="absolute top-8 left-8 text-3xl select-none filter drop-shadow">
+                🪷
+              </div>
+              <div id="lilypad-2" class="absolute bottom-12 right-6 text-3xl select-none filter drop-shadow">
+                <span class="relative">
+                  🍀
+                  <!-- Perched Frog -->
+                  <span id="pond-frog" onclick="interactFrog(event)" class="absolute -top-3 left-1 text-xl cursor-pointer hover:scale-125 transition-transform" title="Garden Frog (Ribbit!)">🐸</span>
+                </span>
+              </div>
+
+              <!-- Sacred Pink Lotus Bloom (Harvestable) -->
+              <div id="lotus-flower" onclick="harvestLotus(event)" class="absolute top-10 left-10 text-3xl cursor-pointer hover:scale-125 transition-transform filter drop-shadow" title="Sacred Lotus Blossom (Click to Harvest)">
+                🌸
+              </div>
+
+              <!-- Zen Bamboo Shishi-Odoshi Rocker Fountain -->
+              <div id="bamboo-fountain" onclick="manualBambooClack(event)" class="absolute top-2 right-3 z-20 cursor-pointer flex flex-col items-center group select-none" title="Zen Bamboo Shishi-Odoshi Rocker - Click to Clack!">
+                <!-- Spout & Trickle -->
+                <div class="flex items-center gap-0.5">
+                  <div class="w-5 h-2 bg-lime-700 rounded-sm border border-lime-900 shadow"></div>
+                  <div id="bamboo-stream" class="w-0.5 h-3 bg-cyan-300/80 animate-pulse"></div>
+                </div>
+                <!-- Pivoting Rocker Arm -->
+                <div id="bamboo-rocker-arm" class="w-10 h-2.5 bg-gradient-to-r from-lime-600 to-lime-500 rounded-full border border-lime-900 shadow origin-center transition-transform duration-300 transform -rotate-6 group-hover:scale-105"></div>
+                <!-- Hollow mouth -->
+                <div class="w-2.5 h-1 bg-lime-950 rounded-full -mt-0.5 ml-6"></div>
+                <!-- Landing Stone Base -->
+                <div class="w-6 h-2 bg-slate-600 rounded-full border border-slate-700 mt-0.5 shadow"></div>
+              </div>
+
+              <!-- Swimming Fish Container -->
+              <div id="fish-container" class="absolute inset-0 pointer-events-none">
+                <!-- Fish entities dynamically rendered -->
+              </div>
+
+              <!-- Pond Interaction Overlay Prompt -->
+              <div class="absolute bottom-2 left-0 right-0 text-center text-[10px] text-white/70 font-semibold pointer-events-none">
+                Click to feed flakes or refill can
+              </div>
+            </div>
+
+            <!-- Pond Quick Actions -->
+            <div class="flex items-center gap-1.5 text-xs">
+              <button onclick="feedPondFish()" class="px-2 py-1 rounded-lg bg-cyan-800 hover:bg-cyan-700 text-cyan-200 font-semibold text-[11px] shadow transition-colors flex items-center gap-1">
+                🦐 Feed
+              </button>
+              <button onclick="refillPondWater()" class="px-2 py-1 rounded-lg bg-sky-700 hover:bg-sky-600 text-white font-semibold text-[11px] shadow transition-colors flex items-center gap-1">
+                💧 Fill
+              </button>
+              <button id="btn-bamboo-toggle" onclick="manualBambooClack()" class="px-2 py-1 rounded-lg bg-lime-900/80 hover:bg-lime-800 text-lime-200 font-semibold text-[11px] shadow transition-colors flex items-center gap-1 border border-lime-700/50" title="Manual Bamboo Fountain Clack">
+                🎋 Clack
+              </button>
+            </div>
+          </div>
+
+          <!-- 8x8 Soil Garden Grid -->
+          <div class="flex flex-col items-center gap-1.5">
+            <div class="w-full text-xs font-bold text-[var(--muted-foreground)] px-1 flex justify-between">
+              <span>Botanical Soil Beds</span>
+              <span>8×8 Grid</span>
+            </div>
+            <div id="garden-grid" class="grid grid-cols-8 gap-1.5 p-3 rounded-2xl bg-black/30 border border-white/10 shadow-2xl backdrop-blur-sm">
+              <!-- Soil cells generated dynamically -->
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mt-3 text-center text-xs text-[var(--muted-foreground)] z-10 flex flex-wrap items-center justify-center gap-3">
+          <span>🌾 Use <b class="text-amber-300">Straw Mulch</b> to cut evaporation</span>
+          <span>•</span>
+          <span>🐟 Fill can from pond for <b class="text-cyan-300">Aquaponic Water (+50% Crop Speed)</b></span>
+        </div>
+      </div>
+
+      <!-- Hotbar / Toolbelt (Keys 1-8) -->
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 shadow-sm flex flex-col gap-2">
+        <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)] px-1">
+          <span class="font-semibold text-[var(--foreground)]">Gardener's Toolbelt</span>
+          <span>Press keys <b class="text-[var(--foreground)]">1 - 8</b> or click slot</span>
+        </div>
+        <div id="hotbar" class="grid grid-cols-8 gap-2">
+          <!-- Hotbar buttons generated dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Inspector & Microclimate Ecology Panel -->
+    <section class="lg:col-span-4 flex flex-col gap-4">
+      
+      <!-- Selected Plot Inspector (Watering & Sunlight Diagnostics) -->
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 shadow-sm flex flex-col gap-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] flex items-center justify-between">
+          <span>Microclimate & Soil Diagnostics</span>
+          <span id="inspect-coords" class="text-[10px] font-mono text-emerald-400">Tile (0, 0)</span>
+        </h2>
+
+        <div id="inspect-content" class="flex flex-col gap-3 text-xs">
+          <!-- Plant Overview -->
+          <div class="flex items-center gap-3 p-2.5 rounded-lg bg-[var(--background)] border border-[var(--card-border)]">
+            <div id="inspect-icon" class="w-12 h-12 rounded-lg bg-black/20 flex items-center justify-center text-3xl">
+              🌱
+            </div>
+            <div class="flex flex-col flex-1">
+              <span id="inspect-name" class="font-bold text-sm text-[var(--foreground)]">Untilled Soil</span>
+              <span id="inspect-category" class="text-[11px] text-[var(--muted-foreground)]">Wild Grass Bed</span>
+              <span id="inspect-stage" class="text-[10px] text-amber-400 mt-0.5">Ready to be tilled with Hoe</span>
+            </div>
+          </div>
+
+          <!-- Dual Gauges: Sunlight & Soil Hydration -->
+          <div class="space-y-2.5">
+            <!-- Sunlight Gauge -->
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-[var(--muted-foreground)] flex items-center gap-1">
+                  <span>☀️</span> Sunlight Exposure
+                </span>
+                <span id="inspect-sun-val" class="font-mono text-amber-400">45% (Soft Morning)</span>
+              </div>
+              <div class="h-2 w-full bg-[var(--background)] rounded-full overflow-hidden border border-[var(--card-border)]">
+                <div id="inspect-sun-bar" class="h-full bg-amber-500 rounded-full transition-all duration-300" style="width: 45%"></div>
+              </div>
+              <div id="inspect-sun-status" class="text-[10px] text-[var(--muted-foreground)] mt-0.5">Direct sky light</div>
+            </div>
+
+            <!-- Soil Hydration Gauge -->
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-[var(--muted-foreground)] flex items-center gap-1">
+                  <span>💧</span> Soil Moisture
+                </span>
+                <span id="inspect-moisture-val" class="font-mono text-cyan-400">0% (Bone Dry)</span>
+              </div>
+              <div class="h-2 w-full bg-[var(--background)] rounded-full overflow-hidden border border-[var(--card-border)]">
+                <div id="inspect-moisture-bar" class="h-full bg-cyan-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+              <div id="inspect-moisture-status" class="text-[10px] text-[var(--muted-foreground)] mt-0.5">Needs watering</div>
+            </div>
+
+            <!-- Soil Enriched Fertility -->
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-[var(--muted-foreground)]">Soil Enriched Fertility</span>
+                <span id="inspect-fertility-val" class="font-mono text-emerald-400">50%</span>
+              </div>
+              <div class="h-2 w-full bg-[var(--background)] rounded-full overflow-hidden border border-[var(--card-border)]">
+                <div id="inspect-fertility-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-300" style="width: 50%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Insulation & Synergies -->
+          <div class="p-2.5 rounded-lg bg-[var(--background)] border border-[var(--card-border)] flex flex-col gap-1">
+            <span class="text-[10px] font-bold uppercase text-[var(--muted-foreground)]">Plot Insulation & Synergies</span>
+            <p id="inspect-synergy" class="text-[11px] text-[var(--foreground)]">None active on this tile.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wildlife & Botanical Catalog Progress -->
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 shadow-sm flex flex-col gap-3 flex-1">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
+            Botanical Catalog Progress
+          </h2>
+          <span id="discovery-count" class="text-xs font-bold text-emerald-400 font-mono">3 / 20 Discovered</span>
+        </div>
+
+        <div class="h-2 w-full bg-[var(--background)] rounded-full overflow-hidden border border-[var(--card-border)]">
+          <div id="discovery-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-300" style="width: 15%"></div>
+        </div>
+
+        <div id="discovery-pills" class="flex flex-wrap gap-1.5 max-h-[140px] overflow-y-auto pr-1"></div>
+
+        <!-- Aquatic Sanctuary Guide Box -->
+        <div class="p-2.5 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-[11px] space-y-1">
+          <div class="font-bold text-cyan-300 flex items-center gap-1.5">
+            <span>🐟</span> Aquatic Sanctuary & Pond Perks
+          </div>
+          <p class="text-[var(--muted-foreground)] leading-tight">
+            • <b>Koi Feeding:</b> Feed flakes for happy splashes & Pond Pearls (+15 G).<br>
+            • <b>Aquaponic Water:</b> Refill can from pond for +50% growth speed!<br>
+            • <b>Sacred Lotus:</b> Harvest blooming pink lotus for 60 G.
+          </p>
+        </div>
+
+        <div class="mt-auto pt-2 border-t border-[var(--card-border)] text-[11px] text-[var(--muted-foreground)] flex items-center justify-between">
+          <span>Tip: Golden Corn shades neighbors!</span>
+          <span class="text-emerald-400 font-semibold cursor-pointer hover:underline" onclick="openAlmanac()">View Almanac &rarr;</span>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- MODAL: Merchant Shop -->
+  <div id="modal-shop" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-[var(--card-border)] flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🌱</span>
+          <h2 class="text-sm font-bold text-[var(--foreground)]">Botanical Seed & Supply Merchant</h2>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="shop-coins-display" class="text-xs font-bold text-amber-300 font-mono">🪙 150 G</span>
+          <button onclick="closeModal('modal-shop')" class="text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-sm font-bold px-2 py-1">✕</button>
+        </div>
+      </div>
+
+      <div class="p-2 border-b border-[var(--card-border)] flex gap-2 text-xs overflow-x-auto">
+        <button onclick="filterShop('all')" class="shop-tab active px-3 py-1 rounded-md bg-[var(--secondary)] font-semibold text-[var(--foreground)]">All (20)</button>
+        <button onclick="filterShop('Vegetable')" class="shop-tab px-3 py-1 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Vegetables</button>
+        <button onclick="filterShop('Fruit')" class="shop-tab px-3 py-1 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Fruits</button>
+        <button onclick="filterShop('Herb')" class="shop-tab px-3 py-1 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Herbs</button>
+        <button onclick="filterShop('Flower')" class="shop-tab px-3 py-1 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Flowers</button>
+        <button onclick="filterShop('Magical')" class="shop-tab px-3 py-1 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Magical</button>
+      </div>
+
+      <div id="shop-items-list" class="p-4 overflow-y-auto flex flex-col gap-2.5 flex-1"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: The Botanical Almanac & Field Guide -->
+  <div id="modal-almanac" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-[var(--card-border)] flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">📖</span>
+          <h2 class="text-sm font-bold text-[var(--foreground)]">The Grand Botanical Almanac & Field Guide</h2>
+        </div>
+        <button onclick="closeModal('modal-almanac')" class="text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-sm font-bold px-2 py-1">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 flex-1 overflow-hidden">
+        <div id="almanac-list" class="md:col-span-5 border-r border-[var(--card-border)] overflow-y-auto p-2 flex flex-col gap-1.5"></div>
+        <div id="almanac-detail" class="md:col-span-7 p-6 overflow-y-auto flex flex-col gap-4 text-xs"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Botanical Apothecary & Herbal Tea Brewing -->
+  <div id="modal-tea-apothecary" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-[var(--card)] border border-amber-600/30 rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden relative">
+      <div class="p-4 border-b border-[var(--border)] flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl">🍵</span>
+          <div>
+            <h2 class="text-sm font-bold text-[var(--foreground)]">Botanical Tea & Herbal Apothecary</h2>
+            <p class="text-[10px] text-[var(--muted-foreground)]">Steep harvested herbs & flowers into restorative wellness teas</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-tea-apothecary')" class="text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-sm font-bold px-2 py-1">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 flex-1 overflow-hidden">
+        <!-- Recipe List -->
+        <div id="tea-recipe-list" class="md:col-span-5 border-r border-[var(--border)] overflow-y-auto p-3 flex flex-col gap-2"></div>
+
+        <!-- Recipe Detail & Steeping Station -->
+        <div id="tea-recipe-detail" class="md:col-span-7 p-5 overflow-y-auto flex flex-col gap-4 text-xs"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Mindful Breathwork (Sacred Lotus Breathing) -->
+  <div id="modal-breathing" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-[var(--card)] border border-teal-500/30 rounded-3xl w-full max-w-lg p-6 flex flex-col items-center gap-5 shadow-2xl relative overflow-hidden">
+      <div class="absolute -top-24 -left-24 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="w-full flex items-center justify-between border-b border-[var(--border)] pb-3 z-10">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🧘</span>
+          <div>
+            <h2 class="text-sm font-bold text-[var(--foreground)]">Sacred Lotus Breathwork</h2>
+            <p class="text-[10px] text-[var(--muted-foreground)]">Harmonize with nature • Infuse your garden with Prana</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-breathing'); stopBreathing();" class="text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-sm font-bold px-2 py-1">✕</button>
+      </div>
+
+      <!-- Rhythm Selection Pills -->
+      <div class="flex items-center gap-2 p-1 bg-black/30 rounded-xl border border-white/5 text-xs z-10">
+        <button id="btn-pattern-box" onclick="selectBreathingPattern('box')" class="px-3 py-1 rounded-lg bg-teal-800 text-teal-200 font-semibold shadow">Box (4-4-4-4)</button>
+        <button id="btn-pattern-sleep" onclick="selectBreathingPattern('sleep_478')" class="px-3 py-1 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Sleep (4-7-8)</button>
+        <button id="btn-pattern-coherence" onclick="selectBreathingPattern('coherence_55')" class="px-3 py-1 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Coherence (5-5)</button>
+      </div>
+
+      <!-- Interactive Lotus Breathing Visual -->
+      <div class="relative w-64 h-64 flex items-center justify-center my-2 select-none z-10">
+        <div id="breath-aura" class="absolute w-52 h-52 rounded-full border border-teal-400/20 bg-teal-500/5 transition-all duration-700 pointer-events-none"></div>
+        <div id="breath-outer-ring" class="absolute w-44 h-44 rounded-full border-2 border-dashed border-teal-400/40 transition-transform duration-700 pointer-events-none"></div>
+        
+        <div id="lotus-blooming-svg" class="relative z-10 transition-transform duration-1000 ease-in-out transform scale-100 filter drop-shadow-[0_0_15px_rgba(45,212,191,0.5)]">
+          <svg width="130" height="130" viewBox="0 0 100 100" class="overflow-visible">
+            <circle cx="50" cy="50" r="14" fill="#fef08a" opacity="0.95" />
+            <path d="M50 15 C42 32, 42 42, 50 50 C58 42, 58 32, 50 15 Z" fill="#2dd4bf" opacity="0.85" />
+            <path d="M85 50 C68 42, 58 42, 50 50 C58 58, 68 58, 85 50 Z" fill="#2dd4bf" opacity="0.85" />
+            <path d="M50 85 C42 68, 42 58, 50 50 C58 58, 58 68, 50 85 Z" fill="#2dd4bf" opacity="0.85" />
+            <path d="M15 50 C32 42, 42 42, 50 50 C42 58, 32 58, 15 50 Z" fill="#2dd4bf" opacity="0.85" />
+            <path d="M25 25 C38 35, 45 42, 50 50 C42 45, 35 38, 25 25 Z" fill="#38bdf8" opacity="0.8" />
+            <path d="M75 25 C62 35, 55 42, 50 50 C58 45, 65 38, 75 25 Z" fill="#38bdf8" opacity="0.8" />
+            <path d="M75 75 C62 65, 55 58, 50 50 C58 55, 65 62, 75 75 Z" fill="#38bdf8" opacity="0.8" />
+            <path d="M25 75 C38 65, 45 58, 50 50 C42 55, 35 62, 25 75 Z" fill="#38bdf8" opacity="0.8" />
+          </svg>
+        </div>
+
+        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-20">
+          <span id="breath-phase-text" class="text-sm font-extrabold uppercase tracking-widest text-teal-200 filter drop-shadow">READY</span>
+          <span id="breath-countdown" class="text-xs font-mono font-bold text-white/90">4s</span>
+        </div>
+      </div>
+
+      <div class="text-center z-10 px-4">
+        <p id="breath-guide-text" class="text-xs text-teal-300 font-medium">Sit comfortably, soften your gaze, and press Begin.</p>
+        <p id="breath-cycle-counter" class="text-[10px] text-[var(--muted-foreground)] mt-1">Cycle 0 of 4 Completed</p>
+      </div>
+
+      <div class="flex items-center gap-3 w-full z-10">
+        <button id="btn-breath-toggle" onclick="toggleBreathingSession()" class="flex-1 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-1.5">
+          <span>🌿</span> Begin Breathwork
+        </button>
+        <button onclick="blessGardenPrana()" class="py-2.5 px-4 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 text-emerald-200 font-semibold text-xs border border-emerald-600/50 shadow flex items-center gap-1" title="Infuses surrounding soil with moisture & vitality">
+          <span>✨</span> Bless Garden
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Sleep Sanctuary (Overnight & Resting Mode) -->
+  <div id="modal-sleep" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-b from-slate-900 to-indigo-950 border border-indigo-500/30 rounded-3xl w-full max-w-lg p-6 flex flex-col gap-5 shadow-2xl text-slate-100 relative overflow-hidden">
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/30 via-slate-950/80 to-black pointer-events-none"></div>
+
+      <div class="w-full flex items-center justify-between border-b border-indigo-800/50 pb-3 z-10">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🌙</span>
+          <div>
+            <h2 class="text-sm font-bold text-indigo-200">Overnight Sleep Sanctuary</h2>
+            <p class="text-[10px] text-indigo-400/80">Generative Absence: Plants flourish quietly while you rest</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-sleep')" class="text-indigo-400 hover:text-white text-sm font-bold px-2 py-1">✕</button>
+      </div>
+
+      <div class="flex flex-col gap-2 z-10">
+        <label class="text-[11px] font-semibold text-indigo-300">Tonight's Bedtime Intention</label>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button onclick="setSleepIntention(this, 'Deep Restoration')" class="sleep-intent-btn active p-2.5 rounded-xl bg-indigo-800/70 border border-indigo-500/60 font-medium text-left">🍃 Deep Restoration</button>
+          <button onclick="setSleepIntention(this, 'Quiet Reflection')" class="sleep-intent-btn p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60 font-medium text-left text-slate-300">🌌 Quiet Reflection</button>
+          <button onclick="setSleepIntention(this, 'Release the Day')" class="sleep-intent-btn p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60 font-medium text-left text-slate-300">🕊️ Release the Day</button>
+          <button onclick="setSleepIntention(this, 'Inner Calm & Stillness')" class="sleep-intent-btn p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60 font-medium text-left text-slate-300">✨ Stillness & Calm</button>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2 z-10">
+        <div class="flex items-center justify-between text-[11px] text-indigo-300 font-semibold">
+          <span>Calming Ambient Soundscape</span>
+          <span id="active-soundscape-label" class="text-[10px] text-cyan-300 font-mono">🌧️ Soft Rain</span>
+        </div>
+        <div class="grid grid-cols-4 gap-2 text-xs">
+          <button onclick="selectSoundscape('rain')" class="sound-btn active p-2 rounded-xl bg-indigo-800/80 border border-indigo-500/70 text-center flex flex-col items-center gap-1">
+            <span class="text-base">🌧️</span>
+            <span class="text-[10px]">Night Rain</span>
+          </button>
+          <button onclick="selectSoundscape('crickets')" class="sound-btn p-2 rounded-xl bg-slate-800/60 border border-slate-700/60 text-center flex flex-col items-center gap-1 text-slate-300">
+            <span class="text-base">🦗</span>
+            <span class="text-[10px]">Crickets</span>
+          </button>
+          <button onclick="selectSoundscape('bowl')" class="sound-btn p-2 rounded-xl bg-slate-800/60 border border-slate-700/60 text-center flex flex-col items-center gap-1 text-slate-300">
+            <span class="text-base">🥣</span>
+            <span class="text-[10px]">432Hz Bowl</span>
+          </button>
+          <button onclick="selectSoundscape('pond')" class="sound-btn p-2 rounded-xl bg-slate-800/60 border border-slate-700/60 text-center flex flex-col items-center gap-1 text-slate-300">
+            <span class="text-base">🌊</span>
+            <span class="text-[10px]">Pond Water</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="p-3 rounded-2xl bg-indigo-950/60 border border-indigo-700/40 flex flex-col gap-2 z-10">
+        <div class="flex items-center justify-between text-[11px]">
+          <span class="font-semibold text-indigo-200">Simulate Real Away Time (Instant Test)</span>
+          <span class="text-[10px] text-emerald-400 font-mono">Generative Absence</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="simulateAwayTime(1)" class="py-1.5 px-2 rounded-lg bg-indigo-900/80 hover:bg-indigo-800 border border-indigo-600/50 text-indigo-200 text-xs font-medium">⏳ 1h Nap</button>
+          <button onclick="simulateAwayTime(4)" class="py-1.5 px-2 rounded-lg bg-indigo-900/80 hover:bg-indigo-800 border border-indigo-600/50 text-indigo-200 text-xs font-medium">🍃 4h Rest</button>
+          <button onclick="simulateAwayTime(8)" class="py-1.5 px-2 rounded-lg bg-indigo-700 hover:bg-indigo-600 border border-indigo-400 text-white text-xs font-bold shadow">🌙 8h Sleep</button>
+        </div>
+      </div>
+
+      <button onclick="enterSleepOverlay()" class="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xl flex items-center justify-center gap-2 z-10 transition-transform active:scale-95">
+        <span>🌌</span> Enter Night Sanctuary (Dim Screen)
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: Focus Grove (Mindful Work / Study Companion) -->
+  <div id="modal-focus" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-[var(--card)] border border-emerald-500/30 rounded-3xl w-full max-w-md p-6 flex flex-col items-center gap-5 shadow-2xl z-10">
+      <div class="w-full flex items-center justify-between border-b border-[var(--border)] pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🌳</span>
+          <div>
+            <h2 class="text-sm font-bold text-[var(--foreground)]">Sacred Focus Grove</h2>
+            <p class="text-[10px] text-[var(--muted-foreground)]">Screen-free focus • Cultivate your inner Bodhi Tree</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-focus')" class="text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-sm font-bold px-2 py-1">✕</button>
+      </div>
+
+      <div class="flex flex-col items-center justify-center p-4 rounded-2xl bg-black/30 border border-white/5 w-full">
+        <div id="focus-tree-icon" class="text-6xl my-2 filter drop-shadow animate-bounce-slow">🌱</div>
+        <div id="focus-tree-stage" class="text-xs font-bold text-emerald-300">Sprout of Intention</div>
+        <div id="focus-timer-clock" class="text-3xl font-mono font-bold text-white tracking-widest mt-2">25:00</div>
+        
+        <div class="w-full bg-slate-800 rounded-full h-2 mt-3 overflow-hidden">
+          <div id="focus-progress-bar" class="bg-gradient-to-r from-teal-500 to-emerald-400 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs">
+        <button onclick="setFocusMinutes(15)" class="focus-dur-btn px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--secondary)]">15 min</button>
+        <button onclick="setFocusMinutes(25)" class="focus-dur-btn active px-3 py-1.5 rounded-lg bg-emerald-800 text-emerald-200 font-bold border border-emerald-600">25 min (Pomodoro)</button>
+        <button onclick="setFocusMinutes(50)" class="focus-dur-btn px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--secondary)]">50 min</button>
+      </div>
+
+      <button id="btn-focus-toggle" onclick="toggleFocusSession()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-1.5">
+        <span>🌱</span> Begin Focus Session
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: Dawn Awakening Summary (Returned from Rest / Away) -->
+  <div id="modal-morning-dew" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-teal-500/40 rounded-3xl w-full max-w-lg p-6 flex flex-col gap-4 shadow-2xl text-slate-100 relative">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-3xl border border-teal-400/30">
+          🌅
+        </div>
+        <div>
+          <h2 id="morning-title" class="text-base font-bold text-teal-200">Dawn Awakening Sanctuary</h2>
+          <p id="morning-subtitle" class="text-xs text-teal-400/80">Your garden gently flourished while you rested.</p>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-black/40 border border-teal-500/20 flex flex-col gap-3 text-xs">
+        <div class="flex items-center justify-between border-b border-white/10 pb-2">
+          <span class="text-slate-400">Time Away in Stillness:</span>
+          <span id="morning-hours" class="font-bold text-teal-200 font-mono">8.0 Hours</span>
+        </div>
+        <div class="flex items-center justify-between border-b border-white/10 pb-2">
+          <span class="text-slate-400">Dream Dew Droplets Harvested:</span>
+          <span id="morning-dew" class="font-bold text-amber-300 font-mono flex items-center gap-1">✨ +16 Dew</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-slate-400">Crops Ready for Harvest:</span>
+          <span id="morning-crops" class="font-semibold text-emerald-300">Golden Maize, Crisp Carrot, Moonlit Violet</span>
+        </div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-teal-950/40 border border-teal-800/40 text-center">
+        <p id="morning-quote" class="text-xs italic text-teal-200/90 leading-relaxed">
+          "Growth does not hurry; yet everything is accomplished."
+        </p>
+      </div>
+
+      <button onclick="closeModal('modal-morning-dew')" class="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-lg transition-transform active:scale-95">
+        🍃 Collect Dew & Tend Garden
+      </button>
+    </div>
+  </div>
+
+  <!-- FULLSCREEN NIGHT SLEEP OVERLAY -->
+  <div id="night-sleep-overlay" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center gap-6 p-6 hidden select-none">
+    <div class="text-6xl filter drop-shadow-[0_0_25px_rgba(199,210,254,0.6)] animate-pulse">🌙</div>
+    <div class="text-center space-y-1">
+      <h2 class="text-xl font-bold text-indigo-100 tracking-wider">Sleep Sanctuary Active</h2>
+      <p id="night-overlay-intention" class="text-xs text-indigo-300 italic">Intention: Deep Restoration</p>
+    </div>
+    
+    <div id="night-clock" class="text-5xl font-mono font-extralight text-indigo-200 tracking-widest my-2">
+      10:45 PM
+    </div>
+
+    <div class="flex items-center gap-3 text-xs text-indigo-400/80 bg-indigo-950/40 px-4 py-2 rounded-full border border-indigo-800/40">
+      <span id="night-overlay-sound">🌧️ Soundscape: Night Rain</span>
+      <span>•</span>
+      <span>Generative Absence Active</span>
+    </div>
+
+    <button onclick="exitSleepOverlay()" class="mt-4 px-6 py-2.5 rounded-xl bg-indigo-800/60 hover:bg-indigo-700/80 text-indigo-100 border border-indigo-500/50 text-xs font-semibold shadow-lg transition-colors">
+      🌅 Awaken & Greet the Morning
+    </button>
+  </div>
+
+  <!-- Web Audio Synthesizer (Pond water splashes, bubbles, frog ribbits, fish chimes) -->
+  <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSfx(type) {
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const now = audioCtx.currentTime;
+
+      if (type === 'till') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.exponentialRampToValueAtTime(40, now + 0.12);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+        osc.start(now);
+        osc.stop(now + 0.12);
+      } else if (type === 'water') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(750, now + 0.15);
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+        osc.start(now);
+        osc.stop(now + 0.18);
+      } else if (type === 'splash') {
+        // Water splash / bubbling fish surfacing
+        [280, 420, 600].forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.type = 'sine';
+          const t = now + idx * 0.05;
+          osc.frequency.setValueAtTime(freq, t);
+          osc.frequency.exponentialRampToValueAtTime(freq * 1.5, t + 0.1);
+          gain.gain.setValueAtTime(0.12, t);
+          gain.gain.linearRampToValueAtTime(0.01, t + 0.12);
+          osc.start(t);
+          osc.stop(t + 0.12);
+        });
+      } else if (type === 'frog_ribbit') {
+        // Deep frog croak
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(95, now);
+        osc.frequency.linearRampToValueAtTime(75, now + 0.22);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.22);
+        osc.start(now);
+        osc.stop(now + 0.22);
+      } else if (type === 'mulch') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.linearRampToValueAtTime(150, now + 0.14);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.14);
+        osc.start(now);
+        osc.stop(now + 0.14);
+      } else if (type === 'plant') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(520, now + 0.1);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      } else if (type === 'harvest') {
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.connect(g);
+          g.connect(audioCtx.destination);
+          o.type = 'triangle';
+          o.frequency.setValueAtTime(freq, now + i * 0.04);
+          g.gain.setValueAtTime(0.12, now + i * 0.04);
+          g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.04 + 0.35);
+          o.start(now + i * 0.04);
+          o.stop(now + i * 0.04 + 0.35);
+        });
+      } else if (type === 'coin') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(987.77, now);
+        osc.frequency.setValueAtTime(1318.51, now + 0.08);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      } else if (type === 'bird_chirp') {
+        const notes = [1760, 2217.46, 2637.02, 3135.96];
+        notes.forEach((freq, idx) => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.connect(g);
+          g.connect(audioCtx.destination);
+          o.type = 'sine';
+          const t = now + idx * 0.07;
+          o.frequency.setValueAtTime(freq, t);
+          o.frequency.exponentialRampToValueAtTime(freq * 1.25, t + 0.05);
+          g.gain.setValueAtTime(0.08, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+          o.start(t);
+          o.stop(t + 0.06);
+        });
+      } else if (type === 'butterfly_chime') {
+        [1046.5, 1318.5, 1567.98].forEach((f, i) => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.connect(g);
+          g.connect(audioCtx.destination);
+          o.type = 'sine';
+          const t = now + i * 0.05;
+          o.frequency.setValueAtTime(f, t);
+          g.gain.setValueAtTime(0.06, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+          o.start(t);
+          o.stop(t + 0.2);
+        });
+      } else if (type === 'singing_bowl') {
+        playSingingBowl(432, 4.5);
+      } else if (type === 'chime') {
+        [528, 660, 792].forEach((f, i) => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.connect(g);
+          g.connect(audioCtx.destination);
+          o.type = 'sine';
+          const t = now + i * 0.08;
+          o.frequency.setValueAtTime(f, t);
+          g.gain.setValueAtTime(0.08, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+          o.start(t);
+          o.stop(t + 0.45);
+        });
+      } else if (type === 'bamboo_clack') {
+        // Japanese Shishi-Odoshi hollow wooden clack with stone impact
+        [310, 480, 720].forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.type = idx === 0 ? 'sine' : 'triangle';
+          const t = now + idx * 0.003;
+          osc.frequency.setValueAtTime(freq, t);
+          osc.frequency.exponentialRampToValueAtTime(freq * 0.72, t + 0.16);
+          gain.gain.setValueAtTime(0.24 / (idx + 1), t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+          osc.start(t);
+          osc.stop(t + 0.16);
+        });
+        const oscClick = audioCtx.createOscillator();
+        const clickGain = audioCtx.createGain();
+        oscClick.connect(clickGain);
+        clickGain.connect(audioCtx.destination);
+        oscClick.type = 'sawtooth';
+        oscClick.frequency.setValueAtTime(1100, now);
+        oscClick.frequency.exponentialRampToValueAtTime(220, now + 0.04);
+        clickGain.gain.setValueAtTime(0.18, now);
+        clickGain.gain.linearRampToValueAtTime(0.001, now + 0.04);
+        oscClick.start(now);
+        oscClick.stop(now + 0.04);
+        setTimeout(() => {
+          if (audioCtx && audioCtx.state !== 'closed') {
+            const t2 = audioCtx.currentTime;
+            const oscDrip = audioCtx.createOscillator();
+            const dripGain = audioCtx.createGain();
+            oscDrip.connect(dripGain);
+            dripGain.connect(audioCtx.destination);
+            oscDrip.type = 'sine';
+            oscDrip.frequency.setValueAtTime(650, t2);
+            oscDrip.frequency.exponentialRampToValueAtTime(1350, t2 + 0.08);
+            dripGain.gain.setValueAtTime(0.08, t2);
+            dripGain.gain.linearRampToValueAtTime(0.001, t2 + 0.08);
+            oscDrip.start(t2);
+            oscDrip.stop(t2 + 0.08);
+          }
+        }, 160);
+      } else if (type === 'tea_brew') {
+        // Steeping kettle boiling simmer
+        [280, 440, 680].forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.type = 'sine';
+          const t = now + idx * 0.08;
+          osc.frequency.setValueAtTime(freq, t);
+          osc.frequency.exponentialRampToValueAtTime(freq * 1.35, t + 0.25);
+          gain.gain.setValueAtTime(0.12, t);
+          gain.gain.linearRampToValueAtTime(0.001, t + 0.25);
+          osc.start(t);
+          osc.stop(t + 0.25);
+        });
+      } else if (type === 'tea_sip') {
+        // Mindful warm tea sip & relaxing bell
+        [528, 660, 1056].forEach((f, i) => {
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.connect(g);
+          g.connect(audioCtx.destination);
+          osc.type = 'sine';
+          const t = now + i * 0.09;
+          osc.frequency.setValueAtTime(f, t);
+          g.gain.setValueAtTime(0.1, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.65);
+          osc.start(t);
+          osc.stop(t + 0.65);
+        });
+      } else if (type === 'starlight') {
+        // Bioluminescent sparkle chime
+        [1320, 1760, 2640].forEach((f, i) => {
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.connect(g);
+          g.connect(audioCtx.destination);
+          osc.type = 'sine';
+          const t = now + i * 0.06;
+          osc.frequency.setValueAtTime(f, t);
+          g.gain.setValueAtTime(0.08, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+          osc.start(t);
+          osc.stop(t + 0.35);
+        });
+      }
+    }
+
+    // Mindful Singing Bowl Synthesizer (432Hz Fundamental + Golden Ratio Harmonics)
+    function playSingingBowl(baseFreq = 432, duration = 4.0) {
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const now = audioCtx.currentTime;
+      [baseFreq, baseFreq * 1.5, baseFreq * 2.76].forEach((f, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f, now);
+        if (idx === 1) osc.detune.setValueAtTime(3, now);
+        if (idx === 2) osc.detune.setValueAtTime(-4, now);
+        const vol = idx === 0 ? 0.16 : (idx === 1 ? 0.09 : 0.04);
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(vol, now + 0.18);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + duration);
+      });
+    }
+
+    // Ambient Soundscape Synthesizer Engine
+    let ambientNodes = { osc: null, gain: null, source: null, interval: null, type: null };
+
+    function startAmbientSoundscape(type) {
+      stopAmbientSoundscape();
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      ambientNodes.type = type;
+
+      if (type === 'rain') {
+        const bufferSize = audioCtx.sampleRate * 2;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
+          b6 = white * 0.115926;
+        }
+        const noiseSource = audioCtx.createBufferSource();
+        noiseSource.buffer = buffer;
+        noiseSource.loop = true;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(750, audioCtx.currentTime);
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 1.2);
+        noiseSource.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noiseSource.start();
+        ambientNodes.source = noiseSource;
+        ambientNodes.gain = gain;
+      } else if (type === 'bowl') {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc1.type = 'sine';
+        osc2.type = 'sine';
+        osc1.frequency.setValueAtTime(216, audioCtx.currentTime);
+        osc2.frequency.setValueAtTime(432, audioCtx.currentTime);
+        osc2.detune.setValueAtTime(2.5, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 1.5);
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc1.start();
+        osc2.start();
+        ambientNodes.osc = [osc1, osc2];
+        ambientNodes.gain = gain;
+      } else if (type === 'crickets') {
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0.06;
+        gain.connect(audioCtx.destination);
+        ambientNodes.gain = gain;
+        function chirp() {
+          if (!ambientNodes.gain) return;
+          const t = audioCtx.currentTime;
+          for (let i = 0; i < 3; i++) {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(4500 + (Math.random() * 200 - 100), t + i * 0.04);
+            g.gain.setValueAtTime(0.03, t + i * 0.04);
+            g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.04 + 0.025);
+            osc.connect(g);
+            g.connect(gain);
+            osc.start(t + i * 0.04);
+            osc.stop(t + i * 0.04 + 0.03);
+          }
+        }
+        chirp();
+        ambientNodes.interval = setInterval(chirp, 900 + Math.random() * 500);
+      } else if (type === 'pond') {
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0.07;
+        gain.connect(audioCtx.destination);
+        ambientNodes.gain = gain;
+        function bubble() {
+          if (!ambientNodes.gain) return;
+          const t = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.type = 'sine';
+          const f = 280 + Math.random() * 260;
+          osc.frequency.setValueAtTime(f, t);
+          osc.frequency.exponentialRampToValueAtTime(f * 1.5, t + 0.09);
+          g.gain.setValueAtTime(0.05, t);
+          g.gain.linearRampToValueAtTime(0.001, t + 0.09);
+          osc.connect(g);
+          g.connect(gain);
+          osc.start(t);
+          osc.stop(t + 0.09);
+        }
+        bubble();
+        ambientNodes.interval = setInterval(bubble, 650 + Math.random() * 500);
+      }
+    }
+
+    function stopAmbientSoundscape() {
+      if (ambientNodes.interval) {
+        clearInterval(ambientNodes.interval);
+        ambientNodes.interval = null;
+      }
+      if (ambientNodes.gain) {
+        try {
+          ambientNodes.gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+        } catch(e) {}
+      }
+      setTimeout(() => {
+        if (ambientNodes.source) {
+          try { ambientNodes.source.stop(); } catch(e) {}
+          ambientNodes.source = null;
+        }
+        if (ambientNodes.osc) {
+          if (Array.isArray(ambientNodes.osc)) {
+            ambientNodes.osc.forEach(o => { try { o.stop(); } catch(e) {} });
+          } else {
+            try { ambientNodes.osc.stop(); } catch(e) {}
+          }
+          ambientNodes.osc = null;
+        }
+        ambientNodes.gain = null;
+        ambientNodes.type = null;
+      }, 500);
+    }
+  </script>
+
+  <!-- Complete Game Logic Script -->
+  <script>
+    const PLANT_CATALOG = {
+      // Vegetables
+      carrot: {
+        id: 'carrot', name: 'Crisp Carrot', scientific: 'Daucus carota',
+        category: 'Vegetable', icon: '🥕', seedCost: 10, sellPrice: 24,
+        growHours: [6, 10, 12], regrows: false,
+        sunlight: 'Full Sun', idealMoisture: [0.4, 0.75], castsShade: false, scorchProne: false,
+        desc: 'Crisp, sweet taproot. Thrives in bright sun and evenly hydrated soil.',
+        companion: 'Boosts adjacent potato growth.'
+      },
+      radish: {
+        id: 'radish', name: 'Ruby Radish', scientific: 'Raphanus sativus',
+        category: 'Vegetable', icon: '🌶️', seedCost: 8, sellPrice: 18,
+        growHours: [4, 6, 8], regrows: false,
+        sunlight: 'Partial Shade', idealMoisture: [0.3, 0.65], castsShade: false, scorchProne: false,
+        desc: 'An ultra-fast growing peppery bulb. Extremely forgiving.',
+        companion: 'Loosens soil for root vegetables.'
+      },
+      potato: {
+        id: 'potato', name: 'Earthbound Potato', scientific: 'Solanum tuberosum',
+        category: 'Vegetable', icon: '🥔', seedCost: 15, sellPrice: 40,
+        growHours: [8, 14, 18], regrows: false,
+        sunlight: 'Full Sun', idealMoisture: [0.4, 0.65], castsShade: false, scorchProne: false,
+        desc: 'Hearty, reliable tuber. Sensitive to waterlogging.',
+        companion: 'Absorbs excess soil moisture.'
+      },
+      golden_corn: {
+        id: 'golden_corn', name: 'Golden Maize', scientific: 'Zea mays',
+        category: 'Vegetable', icon: '🌽', seedCost: 25, sellPrice: 70,
+        growHours: [12, 18, 24], regrows: false,
+        sunlight: 'Full Sun', idealMoisture: [0.55, 0.85], castsShade: true, scorchProne: false,
+        desc: 'Towering stalk craving hot direct sun. Casts a cooling shade on neighbors!',
+        companion: 'Provides shade canopy for shade-loving crops.'
+      },
+      giant_pumpkin: {
+        id: 'giant_pumpkin', name: 'Cinnamon Pumpkin', scientific: 'Cucurbita maxima',
+        category: 'Vegetable', icon: '🎃', seedCost: 40, sellPrice: 130,
+        growHours: [16, 26, 36], regrows: false,
+        sunlight: 'Full Sun', idealMoisture: [0.6, 0.9], castsShade: true, scorchProne: false,
+        desc: 'Giant gourd. Broad leaves shade the soil and suppress weeds.',
+        companion: 'Broad leaves smother nearby weeds.'
+      },
+
+      // Fruits (Perennials)
+      strawberry: {
+        id: 'strawberry', name: 'Sweet Dewberry', scientific: 'Fragaria vesca',
+        category: 'Fruit', icon: '🍓', seedCost: 30, sellPrice: 35,
+        growHours: [10, 16, 20], regrows: true, regrowHours: 14,
+        sunlight: 'Full Sun', idealMoisture: [0.5, 0.8], castsShade: false, scorchProne: false,
+        desc: 'Plump crimson berries. Loves straw mulch to preserve fruit sweetness.',
+        companion: 'Attracts friendly pollinators.'
+      },
+      tomato: {
+        id: 'tomato', name: 'Vine Cherry Tomato', scientific: 'Solanum lycopersicum',
+        category: 'Fruit', icon: '🍅', seedCost: 28, sellPrice: 32,
+        growHours: [9, 15, 18], regrows: true, regrowHours: 12,
+        sunlight: 'Full Sun', idealMoisture: [0.5, 0.75], castsShade: false, scorchProne: false,
+        desc: 'Vigorous climbing vines. Needs warm sun and deep watering.',
+        companion: 'Pairs with Marigold to deter hornworms.'
+      },
+      blueberry: {
+        id: 'blueberry', name: 'Indigo Bush Berry', scientific: 'Vaccinium corymbosum',
+        category: 'Fruit', icon: '🫐', seedCost: 35, sellPrice: 42,
+        growHours: [12, 20, 24], regrows: true, regrowHours: 16,
+        sunlight: 'Partial Shade', idealMoisture: [0.55, 0.8], castsShade: false, scorchProne: false,
+        desc: 'Tart berries. Thrives in dappled sunlight and mulched moisture.',
+        companion: 'Enriches soil with micro-nutrients.'
+      },
+      sun_melon: {
+        id: 'sun_melon', name: 'Solar Honeydew', scientific: 'Cucumis melo',
+        category: 'Fruit', icon: '🍈', seedCost: 45, sellPrice: 145,
+        growHours: [14, 22, 30], regrows: false,
+        sunlight: 'Full Sun', idealMoisture: [0.6, 0.85], castsShade: false, scorchProne: false,
+        desc: 'Golden melon. Needs blazing direct sun to build sweet sugars.',
+        companion: 'Loves companionship with herbs.'
+      },
+
+      // Herbs
+      lavender: {
+        id: 'lavender', name: 'Fragrant Lavender', scientific: 'Lavandula angustifolia',
+        category: 'Herb', icon: '🪻', seedCost: 20, sellPrice: 48,
+        growHours: [8, 14, 18], regrows: true, regrowHours: 10,
+        sunlight: 'Full Sun', idealMoisture: [0.25, 0.55], castsShade: false, scorchProne: false,
+        desc: 'Drought-tolerant purple spires. Hates waterlogged soil.',
+        companion: 'Calming aura accelerates adjacent flower blooming.'
+      },
+      peppermint: {
+        id: 'peppermint', name: 'Brisk Peppermint', scientific: 'Mentha piperita',
+        category: 'Herb', icon: '🌿', seedCost: 16, sellPrice: 36,
+        growHours: [6, 10, 14], regrows: true, regrowHours: 8,
+        sunlight: 'Partial Shade', idealMoisture: [0.5, 0.8], castsShade: false, scorchProne: false,
+        desc: 'Crisp herb. Flourishes in cool damp partial shade.',
+        companion: 'Brisk mint scent naturally repels pests.'
+      },
+      chamomile: {
+        id: 'chamomile', name: 'Sun Chamomile', scientific: 'Matricaria chamomilla',
+        category: 'Herb', icon: '🌼', seedCost: 18, sellPrice: 42,
+        growHours: [6, 11, 15], regrows: false,
+        sunlight: 'Full Sun', idealMoisture: [0.4, 0.7], castsShade: false, scorchProne: false,
+        desc: 'Daisy-like blossoms. Heals neighbors from heat stress.',
+        companion: 'Restores adjacent heat-stressed or parched crops.'
+      },
+
+      // Flowers
+      scarlet_poppy: {
+        id: 'scarlet_poppy', name: 'Scarlet Poppy', scientific: 'Papaver rhoeas',
+        category: 'Flower', icon: '🌺', seedCost: 15, sellPrice: 38,
+        growHours: [7, 12, 16], regrows: false,
+        sunlight: 'Full Sun', idealMoisture: [0.3, 0.6], castsShade: false, scorchProne: false,
+        desc: 'Silk-thin scarlet petals. Basks in bright sun.',
+        companion: 'Produces rich pollen triggering hybrid mutations.'
+      },
+      azure_lily: {
+        id: 'azure_lily', name: 'Azure Star Lily', scientific: 'Lilium caeruleum',
+        category: 'Flower', icon: '🪷', seedCost: 22, sellPrice: 55,
+        growHours: [8, 14, 18], regrows: false,
+        sunlight: 'Partial Shade', idealMoisture: [0.45, 0.75], castsShade: false, scorchProne: false,
+        desc: 'Sapphire petals. Loves morning sun and shaded roots.',
+        companion: 'Increases garden beauty score and butterflies.'
+      },
+      marigold: {
+        id: 'marigold', name: 'Golden Marigold', scientific: 'Tagetes patula',
+        category: 'Flower', icon: '🌻', seedCost: 14, sellPrice: 34,
+        growHours: [6, 10, 14], regrows: false,
+        sunlight: 'Full Sun', idealMoisture: [0.3, 0.6], castsShade: false, scorchProne: false,
+        desc: 'Dense golden petals. Loves intense heat and full sun.',
+        companion: 'Completely repels weeds in 1-tile radius.'
+      },
+
+      // Hybrids
+      moonlit_violet: {
+        id: 'moonlit_violet', name: 'Moonlit Violet', scientific: 'Viola nocturna',
+        category: 'Hybrid', icon: '🔮', seedCost: 60, sellPrice: 160,
+        growHours: [12, 20, 26], regrows: false,
+        sunlight: 'Partial Shade', idealMoisture: [0.45, 0.75], castsShade: false, scorchProne: true,
+        desc: 'Rare hybrid. Avoids harsh noon sun; glows at twilight.',
+        companion: 'Faint moonlight allows night growth.'
+      },
+      solar_flare: {
+        id: 'solar_flare', name: 'Solar Flare Dahlia', scientific: 'Dahlia ignis',
+        category: 'Hybrid', icon: '🏵️', seedCost: 75, sellPrice: 195,
+        growHours: [14, 22, 30], regrows: false,
+        sunlight: 'Full Sun', idealMoisture: [0.5, 0.8], castsShade: false, scorchProne: false,
+        desc: 'Radiant orange bloom. Demands maximum solar radiation.',
+        companion: 'Warms adjacent tiles, protecting against cold.'
+      },
+      twilight_orchid: {
+        id: 'twilight_orchid', name: 'Twilight Orchid', scientific: 'Orchis crepusculum',
+        category: 'Hybrid', icon: '⚜️', seedCost: 120, sellPrice: 350,
+        growHours: [18, 30, 42], regrows: false,
+        sunlight: 'Partial Shade', idealMoisture: [0.5, 0.7], castsShade: false, scorchProne: true,
+        desc: 'Master botanical jewel. Needs gentle dappled shade and careful watering.',
+        companion: 'Doubles adjacent crop sell value.'
+      },
+
+      // Magical Flora
+      chrono_fern: {
+        id: 'chrono_fern', name: 'Chrono Fern', scientific: 'Osmunda temporis',
+        category: 'Magical', icon: '🌀', seedCost: 150, sellPrice: 280,
+        growHours: [20, 32, 48], regrows: true, regrowHours: 24,
+        sunlight: 'Shade Loving', idealMoisture: [0.65, 0.9], castsShade: false, scorchProne: true,
+        desc: 'Prehistoric fern. Deep shade lover; scorches quickly in hot noon sun without mulch!',
+        companion: '+25% Growth speed to all 8 surrounding plots!'
+      },
+      glowcap_mushroom: {
+        id: 'glowcap_mushroom', name: 'Bioluminescent Glowcap', scientific: 'Mycena lux',
+        category: 'Magical', icon: '🍄', seedCost: 90, sellPrice: 220,
+        growHours: [10, 18, 24], regrows: true, regrowHours: 12,
+        sunlight: 'Shade Loving', idealMoisture: [0.7, 0.95], castsShade: false, scorchProne: true,
+        desc: 'Ethereal teal mushroom. Thrives in cool shade and damp soil.',
+        companion: 'Spawns beneficial fungal mycelium network.'
+      }
+    };
+
+    const HYBRID_RECIPES = [
+      { p1: 'azure_lily', p2: 'peppermint', result: 'moonlit_violet', name: 'Moonlit Violet' },
+      { p1: 'scarlet_poppy', p2: 'marigold', result: 'solar_flare', name: 'Solar Flare Dahlia' },
+      { p1: 'lavender', p2: 'moonlit_violet', result: 'twilight_orchid', name: 'Twilight Orchid' }
+    ];
+
+    // Game State
+    let coins = 150;
+    let dreamDew = 0;
+    let totalSleepHours = 0;
+    let day = 1;
+    let hour = 6;
+    let minute = 0;
+    const seasons = ['Spring', 'Summer', 'Autumn', 'Winter'];
+    let seasonIndex = 0;
+    let weather = 'Sunny';
+    let timeSpeed = 1;
+    let hasAquaponicCan = false;
+    let lotusBloomed = true;
+
+    // Mindfulness & Relaxation Systems State
+    let breathActive = false;
+    let breathPattern = 'box';
+    let breathCycle = 0;
+    let breathTargetCycles = 4;
+    let breathPhaseIndex = 0;
+    let breathPhaseRemaining = 4;
+    let breathInterval = null;
+
+    const BREATH_CONFIGS = {
+      box: {
+        name: 'Box Breathing (4-4-4-4)',
+        phases: [
+          { name: 'Inhale', duration: 4, scale: 1.4, guide: 'Inhale deeply through your nose, expanding abdomen...', tone: 432 },
+          { name: 'Hold', duration: 4, scale: 1.4, guide: 'Gently suspend breath with soft shoulders...', tone: 540 },
+          { name: 'Exhale', duration: 4, scale: 0.8, guide: 'Smooth, unhurried exhale out the mouth...', tone: 360 },
+          { name: 'Rest', duration: 4, scale: 0.8, guide: 'Rest in pure awareness and stillness...', tone: 288 }
+        ]
+      },
+      sleep_478: {
+        name: 'Deep Sleep Wind-Down (4-7-8)',
+        phases: [
+          { name: 'Inhale', duration: 4, scale: 1.45, guide: 'Quiet, gentle inhale through the nose...', tone: 432 },
+          { name: 'Hold', duration: 7, scale: 1.45, guide: 'Hold softly, releasing all tension...', tone: 540 },
+          { name: 'Exhale', duration: 8, scale: 0.75, guide: 'Exhale completely with a soothing gentle sigh...', tone: 324 },
+          { name: 'Rest', duration: 1, scale: 0.75, guide: 'Soft pause...', tone: 288 }
+        ]
+      },
+      coherence_55: {
+        name: 'Heart Coherence (5-5)',
+        phases: [
+          { name: 'Inhale', duration: 5, scale: 1.4, guide: 'Breathe into your heart center with gratitude...', tone: 432 },
+          { name: 'Exhale', duration: 5, scale: 0.8, guide: 'Breathe out ease, peace, and loving kindness...', tone: 360 }
+        ]
+      }
+    };
+
+    let isSleeping = false;
+    let sleepIntention = 'Deep Restoration';
+    let selectedSoundscapeId = 'rain';
+
+    let focusActive = false;
+    let focusTargetMins = 25;
+    let focusRemainingSec = 25 * 60;
+    let focusTreeStage = 0;
+    let focusInterval = null;
+
+    const FOCUS_TREE_STAGES = [
+      { name: 'Sprout of Intention', icon: '🌱' },
+      { name: 'Growing Tender Sapling', icon: '🌿' },
+      { name: 'Branching Bodhi Bonsai', icon: '🪴' },
+      { name: 'Lush Meditative Canopy', icon: '🌳' },
+      { name: 'Sacred Golden Blossom', icon: '🌸' }
+    ];
+
+    let activeSlotIndex = 0;
+    let selectedTilePos = { x: 0, y: 0 };
+
+    const discoveries = {
+      carrot: true,
+      golden_corn: true,
+      azure_lily: true
+    };
+
+    // Botanical Apothecary & Produce Inventory
+    const produceInventory = {
+      lavender: 3,
+      chamomile: 3,
+      peppermint: 3,
+      sacred_lotus: 1,
+      scarlet_poppy: 1,
+      marigold: 1,
+      strawberry: 2,
+      azure_lily: 1,
+      moonlit_violet: 1,
+      sun_melon: 0
+    };
+
+    const TEA_RECIPES = {
+      tea_chamomile_lavender: {
+        id: 'tea_chamomile_lavender',
+        name: 'Serene Dream Tea',
+        icon: '🪻',
+        desc: 'A fragrant, calming blend of dried lavender and chamomile blossoms. Deepens restful sleep.',
+        ingredients: { lavender: 1, chamomile: 1 },
+        buff_name: 'Serene Slumber (+50% Overnight Dew)',
+        buff_id: 'buff_sleep_dew',
+        duration_sec: 180,
+        color: '#a78bfa'
+      },
+      tea_mint_lotus: {
+        id: 'tea_mint_lotus',
+        name: 'Mint Lotus Clarity Brew',
+        icon: '🍵',
+        desc: 'Crisp aromatic peppermint infused with sacred lotus petals. Clears mental fog and sharpens mindfulness.',
+        ingredients: { peppermint: 1, sacred_lotus: 1 },
+        buff_name: 'Zen Clarity (2x Focus Speed)',
+        buff_id: 'buff_focus_speed',
+        duration_sec: 180,
+        color: '#2dd4bf'
+      },
+      tea_solar_dawn: {
+        id: 'tea_solar_dawn',
+        name: 'Radiant Solar Brew',
+        icon: '☀️',
+        desc: 'Fiery blend of golden marigold, scarlet poppy petals, and sweet dewberries. Radiates solar warmth.',
+        ingredients: { marigold: 1, scarlet_poppy: 1, strawberry: 1 },
+        buff_name: 'Solar Aura (Protects Against Cold/Fog)',
+        buff_id: 'buff_solar_warmth',
+        duration_sec: 240,
+        color: '#fbbf24'
+      },
+      tea_twilight_cordial: {
+        id: 'tea_twilight_cordial',
+        name: 'Twilight Dream Cordial',
+        icon: '✨',
+        desc: 'Enchanting night elixir of moonlit violet and brisk mint. Attracts bioluminescent fireflies and lunar moths.',
+        ingredients: { moonlit_violet: 1, peppermint: 1 },
+        buff_name: 'Lunar Radiance (Spawns Night Wildlife)',
+        buff_id: 'buff_night_fauna',
+        duration_sec: 180,
+        color: '#c084fc'
+      },
+      tea_golden_ambrosia: {
+        id: 'tea_golden_ambrosia',
+        name: 'Golden Bodhi Nectar',
+        icon: '🍯',
+        desc: 'Master botanical brew of honeydew melon, star lily, and starlight dew. Fills garden with fertile vigor.',
+        ingredients: { sun_melon: 1, azure_lily: 1 },
+        buff_name: 'Flora Vitality (+40% Crop Growth)',
+        buff_id: 'buff_vitality',
+        duration_sec: 240,
+        color: '#facc15'
+      }
+    };
+
+    const teaInventory = {
+      tea_chamomile_lavender: 0,
+      tea_mint_lotus: 0,
+      tea_solar_dawn: 0,
+      tea_twilight_cordial: 0,
+      tea_golden_ambrosia: 0
+    };
+
+    let activeTeaBuff = { id: '', name: '', timer: 0, color: '#a78bfa' };
+    let selectedTeaRecipeId = 'tea_chamomile_lavender';
+
+    const hotbar = [
+      { id: 'tool_hoe', type: 'tool', name: 'Hoe', icon: '🪓', count: 1 },
+      { id: 'tool_water', type: 'tool', name: 'Water Can', icon: '💧', count: 1 },
+      { id: 'tool_mulch', type: 'tool', name: 'Straw Mulch', icon: '🌾', count: 6 },
+      { id: 'tool_fish_food', type: 'tool', name: 'Fish Food', icon: '🦐', count: 5 },
+      { id: 'tool_fertilizer', type: 'tool', name: 'Fertilizer', icon: '🧪', count: 4 },
+      { id: 'tool_shears', type: 'tool', name: 'Shears', icon: '✂️', count: 1 },
+      { id: 'seed_golden_corn', type: 'seed', plantId: 'golden_corn', name: 'Corn Seeds', icon: '🌽', count: 4 },
+      { id: 'seed_strawberry', type: 'seed', plantId: 'strawberry', name: 'Strawberry Seeds', icon: '🍓', count: 4 }
+    ];
+
+    // 8x8 Soil Grid
+    const GRID_SIZE = 8;
+    const grid = [];
+    for (let y = 0; y < GRID_SIZE; y++) {
+      grid[y] = [];
+      for (let x = 0; x < GRID_SIZE; x++) {
+        grid[y][x] = {
+          x, y,
+          isTilled: false,
+          moisture: 0,
+          fertility: 0.5,
+          isFertilized: false,
+          isMulched: false,
+          sunlightExposure: 0.45,
+          isShaded: false,
+          hasWeed: false,
+          daysWaterlogged: 0,
+          plant: null
+        };
+      }
+    }
+
+    // ==========================================
+    // POND ECOSYSTEM & FISH ENTITIES
+    // ==========================================
+    const pondFishList = [
+      { id: 'koi_gold', name: 'Golden Kohaku Koi', icon: '🐟', color: '#f97316', x: 50, y: 80, vx: 1.2, vy: 0.6, angle: 0 },
+      { id: 'koi_calico', name: 'Calico Sanke Koi', icon: '🐠', color: '#ef4444', x: 120, y: 150, vx: -0.9, vy: 1.1, angle: 0 },
+      { id: 'fish_blue', name: 'Moonlit Danio', icon: '🐟', color: '#38bdf8', x: 160, y: 70, vx: -1.5, vy: -0.8, angle: 0 },
+      { id: 'fish_dragon', name: 'Celestial Dragon Koi', icon: '✨', color: '#c084fc', x: 80, y: 200, vx: 0.8, vy: -1.2, angle: 0 }
+    ];
+
+    function initPondDOM() {
+      const basin = document.getElementById('pond-basin');
+      basin.onclick = (e) => {
+        // If clicking basin directly (not lotus or frog), feed or lure
+        feedPondFish();
+      };
+      renderFish();
+    }
+
+    function renderFish() {
+      const container = document.getElementById('fish-container');
+      container.innerHTML = '';
+      pondFishList.forEach(f => {
+        const fishEl = document.createElement('div');
+        fishEl.className = 'absolute text-2xl transition-all duration-300 filter drop-shadow-md select-none';
+        fishEl.style.left = `${f.x}px`;
+        fishEl.style.top = `${f.y}px`;
+        fishEl.style.transform = `rotate(${f.angle}rad)`;
+        fishEl.style.color = f.color;
+        fishEl.innerHTML = f.icon;
+        container.appendChild(fishEl);
+      });
+    }
+
+    function updatePondFishPhysics() {
+      const minX = 15, maxX = 200, minY = 20, maxY = 260;
+      pondFishList.forEach(f => {
+        f.x += f.vx;
+        f.y += f.vy;
+        f.angle = Math.atan2(f.vy, f.vx);
+
+        if (f.x <= minX || f.x >= maxX) {
+          f.vx *= -1;
+          f.x = Math.max(minX, Math.min(maxX, f.x));
+        }
+        if (f.y <= minY || f.y >= maxY) {
+          f.vy *= -1;
+          f.y = Math.max(minY, Math.min(maxY, f.y));
+        }
+
+        // Random gentle direction wanders
+        if (Math.random() < 0.05) {
+          f.vx += (Math.random() - 0.5) * 0.6;
+          f.vy += (Math.random() - 0.5) * 0.6;
+          const spd = Math.hypot(f.vx, f.vy);
+          if (spd > 2.0) { f.vx = (f.vx / spd) * 2.0; f.vy = (f.vy / spd) * 2.0; }
+          if (spd < 0.5) { f.vx = (f.vx / spd) * 0.7; f.vy = (f.vy / spd) * 0.7; }
+        }
+      });
+      renderFish();
+    }
+
+    function feedPondFish() {
+      playSfx('splash');
+      notify('🦐 Sprinkled nutritious flakes! Koi rushed to surface.', '#38bdf8');
+      
+      // Rush fish to center
+      pondFishList.forEach(f => {
+        f.vx = (100 - f.x) * 0.05 + (Math.random() - 0.5);
+        f.vy = (140 - f.y) * 0.05 + (Math.random() - 0.5);
+      });
+
+      // Bonus pond pearl / coin drop!
+      if (Math.random() < 0.40) {
+        coins += 15;
+        playSfx('coin');
+        updateCoins();
+        notify('✨ The Koi leaped happily and gifted a Pond Pearl! (+15 G)', '#facc15');
+      }
+    }
+
+    function refillPondWater() {
+      hasAquaponicCan = true;
+      playSfx('splash');
+      notify('💧 Filled Watering Can with Nutrient-Rich Fish Emulsion! (+50% Crop Speed)', '#06b6d4');
+      const wSlot = hotbar.find(s => s.id === 'tool_water');
+      if (wSlot) {
+        wSlot.name = 'Aquaponic Can';
+        wSlot.icon = '🌊';
+        renderHotbar();
+      }
+    }
+
+    function interactFrog(e) {
+      e.stopPropagation();
+      playSfx('frog_ribbit');
+      notify('🐸 The pond frog ribbits happily and snapped up an insect!', '#4ade80');
+    }
+
+    function harvestLotus(e) {
+      e.stopPropagation();
+      if (!lotusBloomed) return;
+      lotusBloomed = false;
+      document.getElementById('lotus-flower').style.opacity = '0.3';
+      document.getElementById('lotus-flower').style.pointerEvents = 'none';
+      coins += 60;
+      produceInventory['sacred_lotus'] = (produceInventory['sacred_lotus'] || 0) + 1;
+      updateCoins();
+      playSfx('harvest');
+      playSfx('coin');
+      notify('🌸 Harvested Sacred Lotus Blossom! (+60 G, +1 Petal)', '#f472b6');
+
+      // Regrow lotus in 45s
+      setTimeout(() => {
+        lotusBloomed = true;
+        document.getElementById('lotus-flower').style.opacity = '1.0';
+        document.getElementById('lotus-flower').style.pointerEvents = 'auto';
+        notify('🌸 A new Sacred Lotus flower has blossomed on the pond!', '#f472b6');
+      }, 45000);
+    }
+
+    // ==========================================
+    // ZEN BAMBOO SHISHI-ODOSHI ROCKER FOUNTAIN
+    // ==========================================
+    let bambooWaterLevel = 0; // 0 to 100
+    let isBambooClacking = false;
+
+    function tickBambooFountain() {
+      if (isBambooClacking) return;
+      bambooWaterLevel += 10;
+      const angle = -6 + (bambooWaterLevel / 100) * 30; // -6deg up to 24deg
+      const arm = document.getElementById('bamboo-rocker-arm');
+      if (arm) arm.style.transform = `rotate(${angle}deg)`;
+
+      if (bambooWaterLevel >= 100) {
+        triggerBambooClack();
+      }
+    }
+
+    function triggerBambooClack() {
+      if (isBambooClacking) return;
+      isBambooClacking = true;
+      bambooWaterLevel = 0;
+      playSfx('bamboo_clack');
+
+      const arm = document.getElementById('bamboo-rocker-arm');
+      if (arm) {
+        arm.style.transition = 'transform 0.08s ease-in';
+        arm.style.transform = 'rotate(-16deg)';
+        setTimeout(() => {
+          arm.style.transition = 'transform 0.4s ease-out';
+          arm.style.transform = 'rotate(-6deg)';
+          setTimeout(() => {
+            if (arm) arm.style.transition = '';
+            isBambooClacking = false;
+          }, 400);
+        }, 120);
+      } else {
+        isBambooClacking = false;
+      }
+    }
+
+    function manualBambooClack(e) {
+      if (e) e.stopPropagation();
+      triggerBambooClack();
+      notify('🎋 Shishi-Odoshi CLACK! Resonant bamboo echoes across the garden.', '#a3e635');
+    }
+
+    // ==========================================
+    // WILDLIFE & ECOSYSTEM (DIURNAL & NOCTURNAL)
+    // ==========================================
+    const activeWildlife = { butterflies: [], birds: [], fireflies: [], moths: [] };
+
+    function updateWildlifeCounter() {
+      const isNight = hour >= 19 || hour <= 5;
+      const elem = document.getElementById('wildlife-display');
+      if (!elem) return;
+      if (isNight) {
+        elem.innerText = `🐟 4 Koi • ✨ ${activeWildlife.fireflies.length} Fireflies • 🌙 ${activeWildlife.moths.length} Moths`;
+      } else {
+        elem.innerText = `🐟 4 Koi • 🦋 ${activeWildlife.butterflies.length} • 🐦 ${activeWildlife.birds.length}`;
+      }
+    }
+
+    function spawnDayFauna() {
+      const layer = document.getElementById('wildlife-layer');
+      if (!layer) return;
+
+      if (activeWildlife.butterflies.length < 3 && Math.random() < 0.45) {
+        const id = 'bf_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+        const el = document.createElement('div');
+        el.className = 'absolute text-base transition-all duration-1000 select-none cursor-pointer';
+        el.style.left = `${15 + Math.random() * 70}%`;
+        el.style.top = `${15 + Math.random() * 70}%`;
+        el.innerText = Math.random() < 0.5 ? '🦋' : '🌸';
+        el.title = 'Fluttering Pollinator';
+        el.onclick = (e) => {
+          e.stopPropagation();
+          playSfx('butterfly_chime');
+          notify('🦋 The butterfly gently flutters around your garden!', '#38bdf8');
+        };
+        layer.appendChild(el);
+        activeWildlife.butterflies.push({ id, el, life: 30 });
+      }
+
+      if (activeWildlife.birds.length < 2 && Math.random() < 0.25) {
+        const id = 'bd_' + Date.now();
+        const el = document.createElement('div');
+        el.className = 'absolute text-base transition-all duration-700 select-none cursor-pointer animate-bounce';
+        el.style.left = `${10 + Math.random() * 80}%`;
+        el.style.top = `${10 + Math.random() * 40}%`;
+        el.innerText = '🐦';
+        el.title = 'Visiting Songbird';
+        el.onclick = (e) => {
+          e.stopPropagation();
+          playSfx('bird_chirp');
+          notify('🐦 The songbird chirps a merry, peaceful melody!', '#facc15');
+        };
+        layer.appendChild(el);
+        activeWildlife.birds.push({ id, el, life: 25 });
+      }
+    }
+
+    function spawnNightFauna() {
+      const layer = document.getElementById('wildlife-layer');
+      if (!layer) return;
+
+      const maxFireflies = activeTeaBuff.id === 'buff_night_fauna' ? 9 : 4;
+      const maxMoths = activeTeaBuff.id === 'buff_night_fauna' ? 5 : 2;
+
+      if (activeWildlife.fireflies.length < maxFireflies) {
+        const id = 'ff_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+        const el = document.createElement('div');
+        el.id = id;
+        el.className = 'absolute cursor-pointer select-none transition-all duration-1000 z-30';
+        el.style.left = `${10 + Math.random() * 80}%`;
+        el.style.top = `${15 + Math.random() * 75}%`;
+        el.innerHTML = `
+          <div class="relative group">
+            <div class="w-3.5 h-3.5 rounded-full bg-lime-300 shadow-[0_0_12px_#a3e635] animate-pulse flex items-center justify-center text-[10px]">
+              ✨
+            </div>
+            <span class="absolute -top-4 -left-4 text-[9px] bg-black/70 text-lime-200 px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              +1 Dew
+            </span>
+          </div>
+        `;
+        el.onclick = (e) => {
+          e.stopPropagation();
+          catchFirefly(el, id);
+        };
+        layer.appendChild(el);
+        activeWildlife.fireflies.push({ id, el, life: 40 });
+      }
+
+      if (activeWildlife.moths.length < maxMoths && Math.random() < 0.35) {
+        const id = 'moth_' + Date.now();
+        const el = document.createElement('div');
+        el.id = id;
+        el.className = 'absolute cursor-pointer select-none transition-all duration-700 z-30 filter drop-shadow-[0_0_8px_rgba(192,132,252,0.8)]';
+        el.style.left = `${15 + Math.random() * 70}%`;
+        el.style.top = `${20 + Math.random() * 60}%`;
+        el.innerText = '🌙';
+        el.title = 'Lunar Silk Moth - Pollinates night blooms with Moon Dust';
+        el.onclick = (e) => {
+          e.stopPropagation();
+          playSfx('starlight');
+          scatterMoonDust(el);
+          notify('🌙 Lunar Silk Moth fluttered and scattered fertile Moon Dust!', '#c084fc');
+        };
+        layer.appendChild(el);
+        activeWildlife.moths.push({ id, el, life: 35 });
+      }
+    }
+
+    function catchFirefly(el, id) {
+      playSfx('starlight');
+      dreamDew += 1;
+      updateDewDisplay();
+
+      const toast = document.createElement('div');
+      toast.className = 'absolute text-xs font-bold text-lime-300 pointer-events-none transition-all duration-700 transform -translate-y-6 opacity-0';
+      toast.style.left = el.style.left;
+      toast.style.top = el.style.top;
+      toast.innerText = '+1 ✨ Dream Dew';
+      document.getElementById('wildlife-layer').appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '1';
+        setTimeout(() => toast.remove(), 700);
+      }, 20);
+
+      el.remove();
+      activeWildlife.fireflies = activeWildlife.fireflies.filter(f => f.id !== id);
+      updateWildlifeCounter();
+      notify('✨ Caught a shimmering Firefly! Gathered +1 Dream Dew.', '#a3e635');
+    }
+
+    function scatterMoonDust(el) {
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          const c = grid[y][x];
+          if (c.plant && !c.plant.isMature) {
+            c.plant.progressHours += 2;
+          }
+        }
+      }
+      renderGrid();
+    }
+
+    function tickWildlife() {
+      const isNight = hour >= 19 || hour <= 5 || activeTeaBuff.id === 'buff_night_fauna';
+
+      if (isNight) {
+        activeWildlife.butterflies.forEach(b => b.el.remove());
+        activeWildlife.butterflies = [];
+        activeWildlife.birds.forEach(b => b.el.remove());
+        activeWildlife.birds = [];
+        spawnNightFauna();
+
+        activeWildlife.fireflies.forEach(f => {
+          f.life--;
+          const curLeft = parseFloat(f.el.style.left) || 50;
+          const curTop = parseFloat(f.el.style.top) || 50;
+          f.el.style.left = `${Math.max(10, Math.min(85, curLeft + (Math.random() - 0.5) * 8))}%`;
+          f.el.style.top = `${Math.max(15, Math.min(80, curTop + (Math.random() - 0.5) * 8))}%`;
+          if (f.life <= 0) f.el.remove();
+        });
+        activeWildlife.fireflies = activeWildlife.fireflies.filter(f => f.life > 0);
+
+        activeWildlife.moths.forEach(m => {
+          m.life--;
+          const curLeft = parseFloat(m.el.style.left) || 50;
+          const curTop = parseFloat(m.el.style.top) || 50;
+          m.el.style.left = `${Math.max(15, Math.min(80, curLeft + (Math.random() - 0.5) * 12))}%`;
+          m.el.style.top = `${Math.max(15, Math.min(75, curTop + (Math.random() - 0.5) * 12))}%`;
+          if (m.life <= 0) m.el.remove();
+        });
+        activeWildlife.moths = activeWildlife.moths.filter(m => m.life > 0);
+      } else {
+        activeWildlife.fireflies.forEach(f => f.el.remove());
+        activeWildlife.fireflies = [];
+        activeWildlife.moths.forEach(m => m.el.remove());
+        activeWildlife.moths = [];
+        spawnDayFauna();
+
+        activeWildlife.butterflies.forEach(b => {
+          b.life--;
+          const curLeft = parseFloat(b.el.style.left) || 50;
+          const curTop = parseFloat(b.el.style.top) || 50;
+          b.el.style.left = `${Math.max(10, Math.min(85, curLeft + (Math.random() - 0.5) * 6))}%`;
+          b.el.style.top = `${Math.max(10, Math.min(80, curTop + (Math.random() - 0.5) * 6))}%`;
+          if (b.life <= 0) b.el.remove();
+        });
+        activeWildlife.butterflies = activeWildlife.butterflies.filter(b => b.life > 0);
+
+        activeWildlife.birds.forEach(b => {
+          b.life--;
+          if (b.life <= 0) b.el.remove();
+        });
+        activeWildlife.birds = activeWildlife.birds.filter(b => b.life > 0);
+      }
+
+      updateWildlifeCounter();
+    }
+
+    // Calculate Ambient Sky Sunlight Factor (0.0 to 1.0)
+    function getSkySunlightFactor() {
+      let daylight = 0.05;
+      if (hour >= 6 && hour <= 18) {
+        const norm = (hour - 6.0 + minute / 60.0) / 12.0;
+        daylight = Math.sin(norm * Math.PI);
+      }
+      let weatherAtten = 1.0;
+      if (weather === 'Rainy') weatherAtten = 0.35;
+      else if (weather === 'Overcast') weatherAtten = 0.45;
+      else if (weather === 'Mystical Fog') weatherAtten = 0.25;
+
+      return daylight * weatherAtten;
+    }
+
+    function calculateTileSunlight(x, y) {
+      const baseSky = getSkySunlightFactor();
+      let isShaded = false;
+
+      const neighbors = [
+        { x, y: y - 1 }, { x: x - 1, y }, { x: x + 1, y }
+      ];
+      for (const n of neighbors) {
+        if (n.x >= 0 && n.x < GRID_SIZE && n.y >= 0 && n.y < GRID_SIZE) {
+          const np = grid[n.y][n.x].plant;
+          if (np && PLANT_CATALOG[np.id].castsShade && np.stage >= 2) {
+            isShaded = true;
+            break;
+          }
+        }
+      }
+
+      grid[y][x].isShaded = isShaded;
+      const exposure = isShaded ? baseSky * 0.45 : baseSky;
+      grid[y][x].sunlightExposure = exposure;
+      return exposure;
+    }
+
+    // Grid DOM Setup
+    const gridContainer = document.getElementById('garden-grid');
+    function initGridDOM() {
+      gridContainer.innerHTML = '';
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          const cell = document.createElement('div');
+          cell.id = `cell-${x}-${y}`;
+          cell.className = 'w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-200 relative select-none border border-black/20';
+          cell.onclick = () => onCellClick(x, y);
+          cell.onmouseenter = () => updateInspector(x, y);
+          gridContainer.appendChild(cell);
+        }
+      }
+      renderGrid();
+    }
+
+    function renderGrid() {
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          const cellData = grid[y][x];
+          const cellEl = document.getElementById(`cell-${x}-${y}`);
+          if (!cellEl) continue;
+
+          calculateTileSunlight(x, y);
+
+          if (!cellData.isTilled) {
+            cellEl.style.backgroundColor = '#386629';
+            cellEl.style.borderColor = '#2a4d1f';
+          } else if (cellData.moisture >= 0.88) {
+            cellEl.style.backgroundColor = '#243447';
+            cellEl.style.borderColor = '#38bdf8';
+          } else if (cellData.isMulched) {
+            cellEl.style.backgroundColor = '#6d4c26';
+            cellEl.style.borderColor = '#facc15';
+          } else if (cellData.moisture > 0.15) {
+            cellEl.style.backgroundColor = '#3b2516';
+            cellEl.style.borderColor = '#26160b';
+          } else if (cellData.isFertilized) {
+            cellEl.style.backgroundColor = '#6d462b';
+            cellEl.style.borderColor = '#eab308';
+          } else {
+            cellEl.style.backgroundColor = '#8c5936';
+            cellEl.style.borderColor = '#5c381e';
+          }
+
+          if (cellData.isShaded) cellEl.classList.add('cell-shaded');
+          else cellEl.classList.remove('cell-shaded');
+
+          if (cellData.isMulched) cellEl.classList.add('cell-mulched');
+          else cellEl.classList.remove('cell-mulched');
+
+          let innerHTML = '';
+          if (cellData.hasWeed) {
+            innerHTML = '<span class="text-xl filter drop-shadow z-10">🌿</span>';
+          } else if (cellData.plant) {
+            const p = cellData.plant;
+            const pDef = PLANT_CATALOG[p.id];
+            
+            if (p.isWithered) {
+              innerHTML = '<span class="text-xl opacity-60 grayscale filter drop-shadow z-10">🥀</span>';
+            } else if (p.stage === 0) {
+              innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-amber-200 border border-amber-800 shadow-sm animate-grow z-10"></span>';
+            } else if (p.stage === 1) {
+              innerHTML = '<span class="text-sm animate-grow filter drop-shadow z-10">🌱</span>';
+            } else if (p.stage === 2) {
+              innerHTML = '<span class="text-lg animate-grow filter drop-shadow z-10">🪴</span>';
+            } else if (p.isMature) {
+              const isMagic = pDef.category === 'Magical' || pDef.category === 'Hybrid';
+              const glowClass = isMagic ? 'glow-magic' : '';
+              innerHTML = `<span class="text-2xl animate-grow ${glowClass} filter drop-shadow-md cursor-pointer hover:scale-125 transition-transform z-10">${pDef.icon}</span>`;
+            }
+          }
+
+          if (selectedTilePos.x === x && selectedTilePos.y === y) {
+            cellEl.classList.add('ring-2', 'ring-white', 'scale-105', 'z-20');
+          } else {
+            cellEl.classList.remove('ring-2', 'ring-white', 'scale-105', 'z-20');
+          }
+
+          cellEl.innerHTML = innerHTML;
+        }
+      }
+    }
+
+    function onCellClick(x, y) {
+      selectedTilePos = { x, y };
+      const cell = grid[y][x];
+      const activeItem = hotbar[activeSlotIndex];
+      if (!activeItem) return;
+
+      if (activeItem.id === 'tool_hoe') {
+        if (cell.hasWeed) {
+          cell.hasWeed = false;
+          playSfx('till');
+          notify('Cleared weed from plot!', '#4ade80');
+        } else if (!cell.isTilled) {
+          cell.isTilled = true;
+          cell.moisture = 0;
+          playSfx('till');
+          notify('Tilled soil plot.', '#f59e0b');
+        } else if (cell.plant && cell.plant.isWithered) {
+          cell.plant = null;
+          playSfx('till');
+          notify('Removed withered crop.', '#94a3b8');
+        }
+      } else if (activeItem.id === 'tool_water') {
+        if (cell.isTilled) {
+          cell.moisture = Math.min(1.0, cell.moisture + 0.45);
+          if (hasAquaponicCan) {
+            cell.isFertilized = true;
+            cell.fertility = 1.0;
+            notify('Watered with Aquaponic Fish Water (+Fertilized & Accelerated)!', '#06b6d4');
+          } else {
+            notify(`Watered soil bed to ${Math.round(cell.moisture * 100)}% hydration.`, '#38bdf8');
+          }
+          playSfx('water');
+        }
+      } else if (activeItem.id === 'tool_fish_food') {
+        feedPondFish();
+        activeItem.count--;
+        if (activeItem.count <= 0) {
+          hotbar[activeSlotIndex] = { id: '', type: 'empty', name: 'Empty', icon: '➕', count: 0 };
+        }
+        renderHotbar();
+      } else if (activeItem.id === 'tool_mulch') {
+        if (cell.isTilled && !cell.isMulched && activeItem.count > 0) {
+          cell.isMulched = true;
+          activeItem.count--;
+          if (activeItem.count <= 0) {
+            hotbar[activeSlotIndex] = { id: '', type: 'empty', name: 'Empty', icon: '➕', count: 0 };
+          }
+          playSfx('mulch');
+          notify('🌾 Applied Straw Mulch! Insulates against sun scorch & cuts evaporation.', '#facc15');
+          renderHotbar();
+        }
+      } else if (activeItem.id === 'tool_fertilizer') {
+        if (cell.isTilled && !cell.isFertilized && activeItem.count > 0) {
+          cell.isFertilized = true;
+          cell.fertility = 1.0;
+          activeItem.count--;
+          if (activeItem.count <= 0) {
+            hotbar[activeSlotIndex] = { id: '', type: 'empty', name: 'Empty', icon: '➕', count: 0 };
+          }
+          playSfx('plant');
+          notify('Enriched plot with compost fertilizer!', '#fbbf24');
+          renderHotbar();
+        }
+      } else if (activeItem.type === 'seed' && activeItem.count > 0) {
+        if (cell.isTilled && !cell.plant && !cell.hasWeed) {
+          cell.plant = {
+            id: activeItem.plantId,
+            stage: 0,
+            progressHours: 0,
+            isMature: false,
+            isWithered: false,
+            daysParched: 0,
+            daysWaterlogged: 0
+          };
+          discoveries[activeItem.plantId] = true;
+          activeItem.count--;
+          if (activeItem.count <= 0) {
+            hotbar[activeSlotIndex] = { id: '', type: 'empty', name: 'Empty', icon: '➕', count: 0 };
+          }
+          playSfx('plant');
+          notify(`Planted ${PLANT_CATALOG[activeItem.plantId].name}!`, '#4ade80');
+          renderHotbar();
+          updateDiscoveryProgress();
+        }
+      } else if (activeItem.id === 'tool_shears' || activeItem.type === 'empty') {
+        if (cell.plant && cell.plant.isMature) {
+          harvestCell(x, y);
+        }
+      }
+
+      renderGrid();
+      updateInspector(x, y);
+    }
+
+    function harvestCell(x, y) {
+      const cell = grid[y][x];
+      const p = cell.plant;
+      if (!p || !p.isMature) return;
+      const pDef = PLANT_CATALOG[p.id];
+
+      const yieldCount = Math.floor(Math.random() * 3) + 1;
+      const earnings = pDef.sellPrice * yieldCount;
+      coins += earnings;
+      produceInventory[p.id] = (produceInventory[p.id] || 0) + yieldCount;
+      discoveries[p.id] = true;
+      playSfx('harvest');
+      setTimeout(() => playSfx('coin'), 120);
+
+      notify(`Harvested ${yieldCount}x ${pDef.name}! (+${earnings} G)`, '#facc15');
+
+      checkCrossPollination(x, y);
+
+      if (pDef.regrows) {
+        p.stage = 1;
+        p.isMature = false;
+        p.progressHours = 0;
+      } else {
+        cell.plant = null;
+      }
+
+      updateCoins();
+      renderHotbar();
+      renderGrid();
+      updateInspector(x, y);
+      updateDiscoveryProgress();
+    }
+
+    function checkCrossPollination(x, y) {
+      const neighbors = [
+        { x: x+1, y }, { x: x-1, y }, { x, y: y+1 }, { x, y: y-1 }
+      ];
+      for (const n of neighbors) {
+        if (n.x >= 0 && n.x < GRID_SIZE && n.y >= 0 && n.y < GRID_SIZE) {
+          const neighborCell = grid[n.y][n.x];
+          if (neighborCell.plant && neighborCell.plant.isMature) {
+            const p1 = grid[y][x].plant ? grid[y][x].plant.id : '';
+            const p2 = neighborCell.plant.id;
+            for (const recipe of HYBRID_RECIPES) {
+              if ((recipe.p1 === p1 && recipe.p2 === p2) || (recipe.p1 === p2 && recipe.p2 === p1)) {
+                let hybridChance = 0.45;
+                if (activeWildlife.butterflies.length > 0) hybridChance += 0.20;
+
+                if (Math.random() < hybridChance) {
+                  const hybridDef = PLANT_CATALOG[recipe.result];
+                  addSeedToHotbar(recipe.result, 1);
+                  discoveries[recipe.result] = true;
+                  playSfx('hybrid');
+                  notify(`✨ HYBRID DISCOVERY! Cross-pollinated ${hybridDef.name} Seed!`, '#c084fc');
+                  updateDiscoveryProgress();
+                  return;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function addSeedToHotbar(plantId, amount) {
+      const pDef = PLANT_CATALOG[plantId];
+      for (const slot of hotbar) {
+        if (slot.type === 'seed' && slot.plantId === plantId) {
+          slot.count += amount;
+          renderHotbar();
+          return;
+        }
+      }
+      for (let i = 0; i < hotbar.length; i++) {
+        if (hotbar[i].type === 'empty' || hotbar[i].count <= 0) {
+          hotbar[i] = {
+            id: 'seed_' + plantId,
+            type: 'seed',
+            plantId,
+            name: pDef.name + ' Seeds',
+            icon: pDef.icon,
+            count: amount
+          };
+          renderHotbar();
+          return;
+        }
+      }
+    }
+
+    function updateInspector(x, y) {
+      selectedTilePos = { x, y };
+      const cell = grid[y][x];
+      document.getElementById('inspect-coords').innerText = `Tile (${x}, ${y})`;
+
+      const iconEl = document.getElementById('inspect-icon');
+      const nameEl = document.getElementById('inspect-name');
+      const catEl = document.getElementById('inspect-category');
+      const stageEl = document.getElementById('inspect-stage');
+      
+      const sunVal = document.getElementById('inspect-sun-val');
+      const sunBar = document.getElementById('inspect-sun-bar');
+      const sunStatus = document.getElementById('inspect-sun-status');
+
+      const moistVal = document.getElementById('inspect-moisture-val');
+      const moistBar = document.getElementById('inspect-moisture-bar');
+      const moistStatus = document.getElementById('inspect-moisture-status');
+
+      const fertVal = document.getElementById('inspect-fertility-val');
+      const fertBar = document.getElementById('inspect-fertility-bar');
+      const synergyEl = document.getElementById('inspect-synergy');
+
+      const sunExposure = calculateTileSunlight(x, y);
+      const sunPercent = Math.round(sunExposure * 100);
+      sunVal.innerText = `${sunPercent}% Exposure`;
+      sunBar.style.width = `${sunPercent}%`;
+      sunStatus.innerText = cell.isShaded ? 'Cool Dappled Shade (from tall neighbor)' : (sunPercent > 70 ? 'Intense Direct Sunlight' : 'Diffused Light');
+
+      const moistPercent = Math.round(cell.moisture * 100);
+      moistVal.innerText = `${moistPercent}% Hydration`;
+      moistBar.style.width = `${moistPercent}%`;
+      if (cell.moisture >= 0.88) {
+        moistStatus.innerText = '⚠️ Saturated / Standing Puddles';
+        moistStatus.style.color = '#38bdf8';
+      } else if (cell.moisture >= 0.40) {
+        moistStatus.innerText = 'Optimal Soil Moisture';
+        moistStatus.style.color = '#4ade80';
+      } else {
+        moistStatus.innerText = 'Dry Soil (Needs Water)';
+        moistStatus.style.color = '#f59e0b';
+      }
+
+      const fertPercent = Math.round(cell.fertility * 100);
+      fertVal.innerText = `${fertPercent}%`;
+      fertBar.style.width = `${fertPercent}%`;
+
+      let synergies = [];
+      if (cell.isMulched) synergies.push('🌾 Straw Mulched (Insulation)');
+      if (cell.isShaded) synergies.push('⛅ Companion Shade Canopy');
+      
+      for (let dx = -1; dx <= 1; dx++) {
+        for (let dy = -1; dy <= 1; dy++) {
+          if (dx === 0 && dy === 0) continue;
+          const nx = x + dx, ny = y + dy;
+          if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE) {
+            const np = grid[ny][nx].plant;
+            if (np) {
+              if (np.id === 'chrono_fern') synergies.push('Chrono Fern (+25% Growth)');
+              if (np.id === 'marigold') synergies.push('Marigold (Weed Immunity)');
+              if (np.id === 'chamomile') synergies.push('Chamomile (Heat Stress Relief)');
+            }
+          }
+        }
+      }
+      synergyEl.innerText = synergies.length > 0 ? synergies.join(', ') : 'None active on this tile.';
+
+      if (cell.hasWeed) {
+        iconEl.innerText = '🌿';
+        nameEl.innerText = 'Thorny Weed';
+        catEl.innerText = 'Wild Growth';
+        stageEl.innerText = 'Use Hoe to clear before planting.';
+        return;
+      }
+
+      if (!cell.isTilled) {
+        iconEl.innerText = '🌱';
+        nameEl.innerText = 'Untilled Ground';
+        catEl.innerText = 'Wild Grass Bed';
+        stageEl.innerText = 'Ready to be tilled with Hoe.';
+        return;
+      }
+
+      if (!cell.plant) {
+        iconEl.innerText = cell.isMulched ? '🌾' : '🟫';
+        nameEl.innerText = cell.isMulched ? 'Mulched Soil Bed' : (cell.isFertilized ? 'Enriched Loam Plot' : 'Tilled Soil Bed');
+        catEl.innerText = cell.moisture > 0.15 ? 'Hydrated & Ready' : 'Dry Soil';
+        stageEl.innerText = 'Select a seed pouch from hotbar to plant.';
+        return;
+      }
+
+      const p = cell.plant;
+      const pDef = PLANT_CATALOG[p.id];
+      iconEl.innerText = p.isWithered ? '🥀' : pDef.icon;
+      nameEl.innerText = pDef.name;
+      catEl.innerText = `${pDef.category} • Prefers: ${pDef.sunlight}`;
+
+      if (p.isWithered) {
+        stageEl.innerText = 'Withered due to drought or heat scorch! Clear with Hoe.';
+      } else if (p.isMature) {
+        stageEl.innerText = '✨ Ready to Harvest! Click or use Shears.';
+      } else {
+        const stageNames = ['Sprouting Seed', 'Vegetative Shoot', 'Flowering Bud'];
+        let healthTag = 'Normal Growth';
+        if (pDef.sunlight === 'Full Sun' && cell.sunlightExposure >= 0.7 && cell.moisture >= 0.45) {
+          healthTag = '🌟 Vibrant Vigor (+40% Speed)';
+        } else if (pDef.scorchProne && cell.sunlightExposure > 0.75 && !cell.isMulched && !cell.isShaded) {
+          healthTag = '🔥 Heat Stressed (Scorch Risk!)';
+        }
+        stageEl.innerText = `Stage ${p.stage + 1}/4: ${stageNames[p.stage]} • ${healthTag}`;
+      }
+    }
+
+    function renderHotbar() {
+      const hb = document.getElementById('hotbar');
+      hb.innerHTML = '';
+      hotbar.forEach((slot, i) => {
+        const btn = document.createElement('button');
+        const isActive = activeSlotIndex === i;
+        btn.className = `relative p-2 rounded-xl flex flex-col items-center justify-center transition-all ${
+          isActive 
+            ? 'bg-emerald-600/30 border-2 border-emerald-400 shadow-md scale-105' 
+            : 'bg-[var(--card)] border border-[var(--card-border)] hover:bg-[var(--secondary)]'
+        }`;
+        btn.onclick = () => {
+          activeSlotIndex = i;
+          renderHotbar();
+        };
+
+        btn.innerHTML = `
+          <span class="absolute top-1 left-1.5 text-[9px] font-mono text-[var(--muted-foreground)]">${i + 1}</span>
+          <span class="text-2xl my-1 filter drop-shadow">${slot.icon || '➕'}</span>
+          <span class="text-[10px] font-bold truncate max-w-[50px]">${slot.name}</span>
+          ${slot.count > 1 ? `<span class="absolute bottom-1 right-1.5 text-[10px] font-mono font-bold text-amber-300">x${slot.count}</span>` : ''}
+        `;
+        hb.appendChild(btn);
+      });
+    }
+
+    window.addEventListener('keydown', (e) => {
+      const num = parseInt(e.key);
+      if (!isNaN(num) && num >= 1 && num <= 8) {
+        activeSlotIndex = num - 1;
+        renderHotbar();
+      }
+    });
+
+    function gameTick() {
+      minute += 10;
+      if (minute >= 60) {
+        minute = 0;
+        advanceHour();
+      }
+      updateTimeDisplay();
+      updateAmbientSky();
+      updatePondFishPhysics();
+      tickBambooFountain();
+      tickWildlife();
+      tickTeaBuff();
+    }
+
+    function advanceHour() {
+      hour++;
+      if (hour >= 24) {
+        hour = 0;
+        advanceDay();
+      }
+
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          const cell = grid[y][x];
+          const sun = calculateTileSunlight(x, y);
+
+          if (cell.isTilled && sun > 0.4 && cell.moisture > 0) {
+            let evap = 0.03 * sun;
+            if (cell.isMulched) evap *= 0.40;
+            cell.moisture = Math.max(0, cell.moisture - evap);
+          }
+
+          if (cell.plant && !cell.plant.isMature && !cell.plant.isWithered) {
+            const pDef = PLANT_CATALOG[cell.plant.id];
+            let speed = 1.0;
+
+            if (pDef.sunlight === 'Full Sun') {
+              if (sun >= 0.65) speed += 0.30;
+              else if (sun < 0.35) speed *= 0.55;
+            } else if (pDef.sunlight === 'Shade Loving') {
+              if (sun > 0.70 && !cell.isMulched && !cell.isShaded) {
+                speed *= 0.25;
+              } else if (sun <= 0.45) {
+                speed += 0.35;
+              }
+            }
+
+            if (cell.moisture >= pDef.idealMoisture[0] && cell.moisture <= pDef.idealMoisture[1]) {
+              speed += 0.25;
+            } else if (cell.moisture < 0.15) {
+              speed *= 0.35;
+            }
+
+            if (cell.isFertilized) speed += 0.30;
+            if (activeTeaBuff.id === 'buff_vitality') speed *= 1.40;
+            if (activeTeaBuff.id === 'buff_solar_warmth' && (weather === 'Rainy' || weather === 'Mystical Fog')) speed *= 1.25;
+
+            cell.plant.progressHours += speed;
+            const target = pDef.growHours[cell.plant.stage];
+            if (cell.plant.progressHours >= target) {
+              cell.plant.progressHours = 0;
+              cell.plant.stage++;
+              if (cell.plant.stage >= 3) {
+                cell.plant.isMature = true;
+                notify(`${pDef.name} is ready for harvest!`, '#facc15');
+              }
+            }
+          }
+        }
+      }
+
+      renderGrid();
+      updateInspector(selectedTilePos.x, selectedTilePos.y);
+    }
+
+    function advanceDay() {
+      day++;
+      if (day % 28 === 1 && day > 1) {
+        seasonIndex = (seasonIndex + 1) % seasons.length;
+      }
+
+      const roll = Math.random();
+      if (seasons[seasonIndex] === 'Spring') {
+        weather = roll < 0.35 ? 'Rainy' : 'Sunny';
+      } else if (seasons[seasonIndex] === 'Summer') {
+        weather = roll < 0.15 ? 'Rainy' : 'Sunny';
+      } else if (seasons[seasonIndex] === 'Autumn') {
+        weather = roll < 0.30 ? 'Rainy' : 'Breezy';
+      } else {
+        weather = roll < 0.25 ? 'Mystical Fog' : 'Overcast';
+      }
+
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          const cell = grid[y][x];
+          if (weather === 'Rainy' && cell.isTilled) {
+            cell.moisture = 0.85;
+          } else if (cell.isTilled) {
+            if (cell.moisture <= 0.05) {
+              if (cell.plant) {
+                cell.plant.daysParched++;
+                if (cell.plant.daysParched >= 2) {
+                  cell.plant.isWithered = true;
+                }
+              }
+            } else {
+              if (cell.plant) cell.plant.daysParched = 0;
+            }
+
+            if (cell.moisture >= 0.88) {
+              cell.daysWaterlogged++;
+              if (cell.daysWaterlogged >= 3 && cell.plant) {
+                cell.plant.isWithered = true;
+                notify('A plant suffered root rot from waterlogged soil!', '#f87171');
+              }
+            } else {
+              cell.daysWaterlogged = 0;
+            }
+          } else {
+            if (!cell.hasWeed && Math.random() < 0.08) {
+              cell.hasWeed = true;
+            }
+          }
+        }
+      }
+
+      if (weather === 'Rainy') {
+        notify('🌧️ Gentle rain showers hydrated all garden plots to 85%!', '#38bdf8');
+      }
+
+      renderGrid();
+    }
+
+    function updateTimeDisplay() {
+      const ampm = hour < 12 ? 'AM' : 'PM';
+      const dispHour = hour % 12 === 0 ? 12 : hour % 12;
+      const dispMin = minute < 10 ? '0' + minute : minute;
+      document.getElementById('time-display').innerText = `${dispHour}:${dispMin} ${ampm}`;
+      document.getElementById('date-display').innerText = `${seasons[seasonIndex]}, Day ${day}`;
+      
+      const sunInt = Math.round(getSkySunlightFactor() * 100);
+      let sunLabel = 'Night';
+      if (hour >= 6 && hour < 10) sunLabel = 'Soft Morning';
+      else if (hour >= 10 && hour < 15) sunLabel = 'Peak Noon Sun';
+      else if (hour >= 15 && hour < 19) sunLabel = 'Golden Afternoon';
+      else if (hour >= 19 && hour < 21) sunLabel = 'Dusk Glow';
+      document.getElementById('sun-intensity-display').innerText = `☀️ ${sunInt}% (${sunLabel})`;
+
+      const wEl = document.getElementById('weather-display');
+      if (weather === 'Sunny') wEl.innerText = '☀️ Sunny';
+      else if (weather === 'Rainy') wEl.innerText = '🌧️ Rainy';
+      else if (weather === 'Breezy') wEl.innerText = '🍃 Breezy';
+      else if (weather === 'Overcast') wEl.innerText = '☁️ Overcast';
+      else wEl.innerText = '🌫️ Mystical Fog';
+    }
+
+    function updateAmbientSky() {
+      const sky = document.getElementById('sky-ambient');
+      if (hour >= 6 && hour < 11) {
+        sky.style.background = 'linear-gradient(to bottom, rgba(56, 189, 248, 0.15), rgba(34, 197, 94, 0.15))';
+      } else if (hour >= 11 && hour < 16) {
+        sky.style.background = 'linear-gradient(to bottom, rgba(251, 191, 36, 0.18), rgba(34, 197, 94, 0.12))';
+      } else if (hour >= 16 && hour < 20) {
+        sky.style.background = 'linear-gradient(to bottom, rgba(249, 115, 22, 0.25), rgba(168, 85, 247, 0.2))';
+      } else {
+        sky.style.background = 'linear-gradient(to bottom, rgba(30, 27, 75, 0.6), rgba(15, 23, 42, 0.8))';
+      }
+    }
+
+    function updateCoins() {
+      document.getElementById('coins-display').innerText = `🪙 ${coins} G`;
+      document.getElementById('shop-coins-display').innerText = `🪙 ${coins} G`;
+    }
+
+    function notify(msg, color = '#ffffff') {
+      const tc = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'px-3 py-1.5 rounded-lg bg-black/80 backdrop-blur-md border border-white/20 text-xs shadow-xl transition-all duration-300';
+      toast.style.color = color;
+      toast.innerText = '✦ ' + msg;
+      tc.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px)';
+        setTimeout(() => toast.remove(), 400);
+      }, 2400);
+    }
+
+    function updateDiscoveryProgress() {
+      const container = document.getElementById('discovery-pills');
+      container.innerHTML = '';
+      let discoveredCount = 0;
+      const total = Object.keys(PLANT_CATALOG).length;
+
+      for (const [id, p] of Object.entries(PLANT_CATALOG)) {
+        const isDisc = discoveries[id];
+        if (isDisc) discoveredCount++;
+        const badge = document.createElement('span');
+        badge.className = `px-2 py-0.5 rounded text-[10px] font-semibold flex items-center gap-1 border ${
+          isDisc ? 'bg-emerald-950/40 text-emerald-300 border-emerald-700/50' : 'bg-gray-800/40 text-gray-500 border-gray-700/40'
+        }`;
+        badge.innerHTML = `${isDisc ? p.icon : '❓'} ${isDisc ? p.name : '???'}`;
+        container.appendChild(badge);
+      }
+
+      document.getElementById('discovery-count').innerText = `${discoveredCount} / ${total} Discovered`;
+      document.getElementById('discovery-bar').style.width = `${(discoveredCount / total) * 100}%`;
+    }
+
+    let currentShopCategory = 'all';
+    function openShop() {
+      document.getElementById('modal-shop').classList.remove('hidden');
+      renderShopItems();
+    }
+
+    function filterShop(cat) {
+      currentShopCategory = cat;
+      document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('bg-[var(--secondary)]', 'font-semibold', 'text-[var(--foreground)]'));
+      renderShopItems();
+    }
+
+    function renderShopItems() {
+      const list = document.getElementById('shop-items-list');
+      list.innerHTML = '';
+
+      if (currentShopCategory === 'all') {
+        // Straw Mulch
+        const mulchRow = document.createElement('div');
+        mulchRow.className = 'flex items-center justify-between p-3 rounded-xl bg-[var(--background)] border border-[var(--card-border)]';
+        mulchRow.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">🌾</span>
+            <div>
+              <div class="font-bold text-xs text-[var(--foreground)]">Straw Mulch Bundle (x5)</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Insulates soil, cuts water evaporation by 60%, and prevents sun scorch</div>
+            </div>
+          </div>
+          <button onclick="buyMulch()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold font-mono transition-colors">
+            Buy (15 G)
+          </button>
+        `;
+        list.appendChild(mulchRow);
+
+        // Fish Food Flakes
+        const foodRow = document.createElement('div');
+        foodRow.className = 'flex items-center justify-between p-3 rounded-xl bg-[var(--background)] border border-[var(--card-border)]';
+        foodRow.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">🦐</span>
+            <div>
+              <div class="font-bold text-xs text-[var(--foreground)]">Nutritional Fish Food (x5)</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Feed Koi & Minnows for happy splashes, pearls & coins</div>
+            </div>
+          </div>
+          <button onclick="buyFishFood()" class="px-3 py-1.5 rounded-lg bg-cyan-700 hover:bg-cyan-600 text-white text-xs font-bold font-mono transition-colors">
+            Buy (12 G)
+          </button>
+        `;
+        list.appendChild(foodRow);
+
+        // Fertilizer
+        const fertRow = document.createElement('div');
+        fertRow.className = 'flex items-center justify-between p-3 rounded-xl bg-[var(--background)] border border-[var(--card-border)]';
+        fertRow.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">🧪</span>
+            <div>
+              <div class="font-bold text-xs text-[var(--foreground)]">Organic Compost Fertilizer (x5)</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">Boosts soil fertility and growth speed by +35%</div>
+            </div>
+          </div>
+          <button onclick="buyFertilizer()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold font-mono transition-colors">
+            Buy (20 G)
+          </button>
+        `;
+        list.appendChild(fertRow);
+      }
+
+      for (const [id, p] of Object.entries(PLANT_CATALOG)) {
+        if (p.category === 'Hybrid') continue;
+        if (currentShopCategory !== 'all' && p.category !== currentShopCategory) continue;
+
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between p-3 rounded-xl bg-[var(--background)] border border-[var(--card-border)]';
+        const totalHours = p.growHours[0] + p.growHours[1] + p.growHours[2];
+        row.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">${p.icon}</span>
+            <div>
+              <div class="font-bold text-xs text-[var(--foreground)]">${p.name} Seeds</div>
+              <div class="text-[11px] text-[var(--muted-foreground)]">${p.category} • ${p.sunlight} • ~${totalHours} hrs growth • Sells for ${p.sellPrice} G</div>
+            </div>
+          </div>
+          <button onclick="buySeed('${id}', ${p.seedCost})" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold font-mono transition-colors">
+            Buy (${p.seedCost} G)
+          </button>
+        `;
+        list.appendChild(row);
+      }
+    }
+
+    function buyMulch() {
+      if (coins >= 15) {
+        coins -= 15;
+        updateCoins();
+        const mSlot = hotbar.find(s => s.id === 'tool_mulch');
+        if (mSlot) {
+          mSlot.count += 5;
+        } else {
+          for (let i = 0; i < hotbar.length; i++) {
+            if (hotbar[i].type === 'empty') {
+              hotbar[i] = { id: 'tool_mulch', type: 'tool', name: 'Straw Mulch', icon: '🌾', count: 5 };
+              break;
+            }
+          }
+        }
+        playSfx('coin');
+        notify('Bought 5 Straw Mulch bundles!', '#facc15');
+        renderHotbar();
+      } else {
+        notify('Not enough coins!', '#ef4444');
+      }
+    }
+
+    function buyFishFood() {
+      if (coins >= 12) {
+        coins -= 12;
+        updateCoins();
+        const fSlot = hotbar.find(s => s.id === 'tool_fish_food');
+        if (fSlot) {
+          fSlot.count += 5;
+        } else {
+          for (let i = 0; i < hotbar.length; i++) {
+            if (hotbar[i].type === 'empty') {
+              hotbar[i] = { id: 'tool_fish_food', type: 'tool', name: 'Fish Food', icon: '🦐', count: 5 };
+              break;
+            }
+          }
+        }
+        playSfx('coin');
+        notify('Bought 5 Fish Food Canisters!', '#06b6d4');
+        renderHotbar();
+      } else {
+        notify('Not enough coins!', '#ef4444');
+      }
+    }
+
+    function buyFertilizer() {
+      if (coins >= 20) {
+        coins -= 20;
+        updateCoins();
+        const fSlot = hotbar.find(s => s.id === 'tool_fertilizer');
+        if (fSlot) {
+          fSlot.count += 5;
+        } else {
+          addSeedToHotbar('fertilizer', 5);
+        }
+        playSfx('coin');
+        notify('Bought 5 Compost Fertilizers!', '#fbbf24');
+        renderHotbar();
+      } else {
+        notify('Not enough coins!', '#ef4444');
+      }
+    }
+
+    function buySeed(plantId, cost) {
+      if (coins >= cost) {
+        coins -= cost;
+        updateCoins();
+        addSeedToHotbar(plantId, 1);
+        playSfx('coin');
+        notify(`Purchased ${PLANT_CATALOG[plantId].name} Seeds!`, '#4ade80');
+      } else {
+        notify('Not enough coins!', '#ef4444');
+      }
+    }
+
+    function openAlmanac() {
+      document.getElementById('modal-almanac').classList.remove('hidden');
+      renderAlmanacList();
+      selectAlmanacPlant(Object.keys(PLANT_CATALOG)[0]);
+    }
+
+    function renderAlmanacList() {
+      const list = document.getElementById('almanac-list');
+      list.innerHTML = '';
+      for (const [id, p] of Object.entries(PLANT_CATALOG)) {
+        const isDisc = discoveries[id];
+        const item = document.createElement('div');
+        item.className = 'p-2 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-[var(--secondary)] transition-colors text-xs border border-transparent';
+        item.onclick = () => selectAlmanacPlant(id);
+        item.innerHTML = `
+          <span class="text-xl">${isDisc ? p.icon : '❓'}</span>
+          <div class="flex flex-col">
+            <span class="font-bold ${isDisc ? 'text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}">${isDisc ? p.name : '??? Undiscovered'}</span>
+            <span class="text-[10px] text-[var(--muted-foreground)]">${p.category} • ${p.sunlight}</span>
+          </div>
+        `;
+        list.appendChild(item);
+      }
+    }
+
+    function selectAlmanacPlant(id) {
+      const p = PLANT_CATALOG[id];
+      const isDisc = discoveries[id];
+      const detail = document.getElementById('almanac-detail');
+
+      if (!isDisc) {
+        detail.innerHTML = `
+          <div class="flex items-center gap-4 p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)]">
+            <div class="text-4xl w-16 h-16 rounded-xl bg-black/20 flex items-center justify-center">❓</div>
+            <div>
+              <h3 class="text-base font-bold text-[var(--foreground)]">??? Undiscovered Species</h3>
+              <p class="text-xs text-[var(--muted-foreground)]">Botanical Classification: ${p.category}</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] leading-relaxed">
+            This plant has not yet been grown or crossbred in your garden. Experiment with sunlight, pond water, and companion plantings or check the seed merchant to discover it!
+          </div>
+        `;
+        return;
+      }
+
+      const totalHours = p.growHours[0] + p.growHours[1] + p.growHours[2];
+      const shadeCast = p.castsShade ? ' • Casts Shade Canopy' : '';
+      detail.innerHTML = `
+        <div class="flex items-center gap-4 p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)]">
+          <div class="text-4xl w-16 h-16 rounded-xl bg-black/20 flex items-center justify-center filter drop-shadow">${p.icon}</div>
+          <div>
+            <h3 class="text-base font-bold text-[var(--foreground)]">${p.name}</h3>
+            <p class="text-xs text-emerald-400 font-mono italic">${p.scientific}</p>
+            <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-950/50 text-emerald-300 border border-emerald-700/50">${p.category}</span>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] space-y-2">
+          <span class="text-[10px] font-bold uppercase text-[var(--muted-foreground)]">Botanical Overview</span>
+          <p class="leading-relaxed">${p.desc}</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-3 rounded-xl bg-[var(--background)] border border-[var(--card-border)] flex flex-col">
+            <span class="text-[10px] text-[var(--muted-foreground)] uppercase">Sunlight Preference</span>
+            <span class="font-bold text-xs mt-1 text-amber-400">${p.sunlight}${shadeCast}</span>
+            <span class="text-[10px] text-[var(--muted-foreground)] mt-0.5">${p.scorchProne ? '⚠️ Scorch Prone (Use Mulch/Shade)' : 'Sun Hardy'}</span>
+          </div>
+          <div class="p-3 rounded-xl bg-[var(--background)] border border-[var(--card-border)] flex flex-col">
+            <span class="text-[10px] text-[var(--muted-foreground)] uppercase">Ideal Soil Hydration</span>
+            <span class="font-bold text-xs mt-1 text-cyan-400">${Math.round(p.idealMoisture[0]*100)}% - ${Math.round(p.idealMoisture[1]*100)}%</span>
+            <span class="text-[10px] text-[var(--muted-foreground)] mt-0.5">Value: ${p.sellPrice} Coins</span>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-[var(--background)] border border-[var(--card-border)]">
+          <span class="text-[10px] font-bold uppercase text-[var(--muted-foreground)]">Ecological Companion Synergy</span>
+          <p class="text-xs font-semibold text-emerald-300 mt-1">✨ ${p.companion}</p>
+        </div>
+      `;
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // ==========================================
+    // BOTANICAL APOTHECARY & TEA BREWING MODAL
+    // ==========================================
+    function openApothecaryModal() {
+      renderTeaRecipes();
+      selectTeaRecipe(selectedTeaRecipeId);
+      document.getElementById('modal-tea-apothecary').classList.remove('hidden');
+    }
+
+    function renderTeaRecipes() {
+      const listEl = document.getElementById('tea-recipe-list');
+      if (!listEl) return;
+      listEl.innerHTML = '';
+
+      Object.values(TEA_RECIPES).forEach(rec => {
+        const isSelected = rec.id === selectedTeaRecipeId;
+        const ownedCount = teaInventory[rec.id] || 0;
+        const isActiveBuff = activeTeaBuff.id === rec.buff_id && activeTeaBuff.timer > 0;
+
+        let canBrew = true;
+        for (const [ingId, reqCount] of Object.entries(rec.ingredients)) {
+          if ((produceInventory[ingId] || 0) < reqCount) {
+            canBrew = false;
+            break;
+          }
+        }
+
+        const btn = document.createElement('div');
+        btn.className = `p-2.5 rounded-2xl cursor-pointer border transition-all flex items-center justify-between ${
+          isSelected 
+            ? 'bg-amber-950/70 border-amber-500 shadow-md' 
+            : 'bg-[var(--card)] hover:bg-[var(--border)] border-[var(--border)]'
+        }`;
+        btn.onclick = () => selectTeaRecipe(rec.id);
+
+        btn.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <span class="text-2xl">${rec.icon}</span>
+            <div>
+              <div class="font-bold text-xs text-[var(--foreground)] flex items-center gap-1.5">
+                ${rec.name}
+                ${isActiveBuff ? `<span class="text-[9px] px-1.5 py-0.2 bg-amber-500/30 text-amber-300 rounded-full border border-amber-500/50">Active</span>` : ''}
+              </div>
+              <div class="text-[10px] text-[var(--muted-foreground)]">Stock: ${ownedCount} brewed</div>
+            </div>
+          </div>
+          <div>
+            ${canBrew ? `<span class="text-[10px] text-emerald-400 font-bold">Ready</span>` : `<span class="text-[10px] text-[var(--muted-foreground)]">Needs Herbs</span>`}
+          </div>
+        `;
+        listEl.appendChild(btn);
+      });
+    }
+
+    function selectTeaRecipe(id) {
+      selectedTeaRecipeId = id;
+      const rec = TEA_RECIPES[id];
+      if (!rec) return;
+
+      renderTeaRecipes();
+
+      const detailEl = document.getElementById('tea-recipe-detail');
+      if (!detailEl) return;
+
+      const ownedCount = teaInventory[id] || 0;
+      const isActive = activeTeaBuff.id === rec.buff_id && activeTeaBuff.timer > 0;
+
+      let canBrew = true;
+      let ingHtml = '';
+      for (const [ingId, needed] of Object.entries(rec.ingredients)) {
+        const have = produceInventory[ingId] || 0;
+        const pDef = PLANT_CATALOG[ingId] || { name: ingId === 'sacred_lotus' ? 'Sacred Lotus Petals' : ingId, icon: '🌿' };
+        const satisfied = have >= needed;
+        if (!satisfied) canBrew = false;
+
+        ingHtml += `
+          <div class="flex items-center justify-between p-2 rounded-xl bg-[var(--background)] border ${satisfied ? 'border-emerald-500/40 text-emerald-300' : 'border-rose-500/40 text-rose-300'}">
+            <div class="flex items-center gap-2">
+              <span class="text-base">${pDef.icon || '🌱'}</span>
+              <span class="font-semibold text-xs text-[var(--foreground)]">${pDef.name}</span>
+            </div>
+            <span class="font-mono text-xs font-bold ${satisfied ? 'text-emerald-400' : 'text-rose-400'}">
+              ${have} / ${needed}
+            </span>
+          </div>
+        `;
+      }
+
+      detailEl.innerHTML = `
+        <div class="flex items-start justify-between border-b border-[var(--border)] pb-3">
+          <div class="flex items-center gap-3">
+            <span class="text-4xl p-2 rounded-2xl bg-amber-950/40 border border-amber-600/30">${rec.icon}</span>
+            <div>
+              <h3 class="font-bold text-sm text-[var(--foreground)]">${rec.name}</h3>
+              <p class="text-[11px] text-[var(--muted-foreground)] mt-0.5">${rec.desc}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-[10px] text-[var(--muted-foreground)] uppercase">In Pantry</div>
+            <div class="font-bold text-sm text-amber-300">${ownedCount} Cups</div>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-amber-950/20 border border-amber-600/30 flex flex-col gap-1">
+          <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Apothecary Wellness Buff</div>
+          <div class="font-bold text-xs text-[var(--foreground)] flex items-center gap-1.5">
+            ✨ ${rec.buff_name}
+          </div>
+          <div class="text-[10px] text-[var(--muted-foreground)]">Duration: ${rec.duration_sec}s (${Math.round(rec.duration_sec / 60)} min real-time)</div>
+          ${isActive ? `<div class="mt-1 text-xs font-bold text-amber-300 animate-pulse">Active Now: ${activeTeaBuff.timer}s remaining</div>` : ''}
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <div class="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider">Fresh Harvest Ingredients</div>
+          <div class="flex flex-col gap-1.5">
+            ${ingHtml}
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5 mt-2 pt-2 border-t border-[var(--border)]">
+          <button onclick="brewTea('${rec.id}')" ${canBrew ? '' : 'disabled'} class="flex-1 py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow transition-all ${
+            canBrew 
+              ? 'bg-amber-600 hover:bg-amber-500 text-white cursor-pointer active:scale-95' 
+              : 'bg-zinc-800 text-zinc-500 cursor-not-allowed opacity-60'
+          }">
+            <span>🫖</span> Brew Infusion
+          </button>
+          <button onclick="drinkTea('${rec.id}')" ${ownedCount > 0 ? '' : 'disabled'} class="flex-1 py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow transition-all ${
+            ownedCount > 0 
+              ? 'bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer active:scale-95' 
+              : 'bg-zinc-800 text-zinc-500 cursor-not-allowed opacity-60'
+          }">
+            <span>🍵</span> Sip Brew
+          </button>
+        </div>
+      `;
+    }
+
+    function brewTea(id) {
+      const rec = TEA_RECIPES[id];
+      if (!rec) return;
+
+      for (const [ingId, needed] of Object.entries(rec.ingredients)) {
+        if ((produceInventory[ingId] || 0) < needed) {
+          notify(`Missing ingredients for ${rec.name}!`, '#ef4444');
+          return;
+        }
+      }
+
+      for (const [ingId, needed] of Object.entries(rec.ingredients)) {
+        produceInventory[ingId] -= needed;
+      }
+
+      teaInventory[id] = (teaInventory[id] || 0) + 1;
+      playSfx('tea_brew');
+      notify(`🫖 Brewed fragrant ${rec.name}! Added to your tea pantry.`, rec.color);
+      selectTeaRecipe(id);
+    }
+
+    function drinkTea(id) {
+      const rec = TEA_RECIPES[id];
+      if (!rec || (teaInventory[id] || 0) <= 0) return;
+
+      teaInventory[id]--;
+      activeTeaBuff = {
+        id: rec.buff_id,
+        name: rec.buff_name,
+        timer: rec.duration_sec,
+        color: rec.color
+      };
+
+      const badge = document.getElementById('tea-buff-badge');
+      const text = document.getElementById('tea-buff-text');
+      if (badge && text) {
+        badge.classList.remove('hidden');
+        text.innerText = `🍵 ${rec.name} (${rec.duration_sec}s)`;
+        text.style.borderColor = rec.color;
+      }
+
+      playSfx('tea_sip');
+      notify(`🍵 Sipped warm ${rec.name}! Buff activated: ${rec.buff_name}`, rec.color);
+
+      if (rec.buff_id === 'buff_night_fauna') {
+        spawnNightFauna();
+        spawnNightFauna();
+      }
+
+      selectTeaRecipe(id);
+    }
+
+    function tickTeaBuff() {
+      if (activeTeaBuff.timer > 0) {
+        activeTeaBuff.timer--;
+        const text = document.getElementById('tea-buff-text');
+        if (text) {
+          text.innerText = `🍵 ${activeTeaBuff.name.split(' (')[0]} (${activeTeaBuff.timer}s)`;
+        }
+        if (activeTeaBuff.timer <= 0) {
+          clearTeaBuff();
+        }
+      }
+    }
+
+    function clearTeaBuff() {
+      activeTeaBuff = { id: '', name: '', timer: 0, color: '#a78bfa' };
+      const badge = document.getElementById('tea-buff-badge');
+      if (badge) badge.classList.add('hidden');
+      notify('🍵 Your tea herbal buff has gently waned.', '#a1a1aa');
+    }
+
+    document.getElementById('btn-time-speed').onclick = () => {
+      if (timeSpeed === 1) timeSpeed = 2;
+      else if (timeSpeed === 2) timeSpeed = 5;
+      else timeSpeed = 1;
+      document.getElementById('btn-time-speed').innerText = `⏩ ${timeSpeed}x`;
+    };
+
+    document.getElementById('btn-shop').onclick = openShop;
+    document.getElementById('btn-almanac').onclick = openAlmanac;
+
+    // ==========================================
+    // MINDFULNESS, SLEEP & OFFLINE PROGRESSION
+    // ==========================================
+    const BOTANICAL_REFLECTIONS = [
+      "Growth does not hurry; yet everything is accomplished.",
+      "In the quiet stillness of the earth, unseen roots reach deep.",
+      "Like a garden resting under moonlight, your mind renews in silence.",
+      "Morning dew brings gentle blessings to the patient heart.",
+      "Each breath is a seedling; each pause is fertile soil.",
+      "You do not have to strive constantly. Nature flourishes when you let it be."
+    ];
+
+    function updateDewDisplay() {
+      const dewEl = document.getElementById('dew-display');
+      if (dewEl) dewEl.innerText = `✨ ${dreamDew} Dew`;
+    }
+
+    // 1. BREATHWORK (Sacred Lotus Breathing Engine)
+    function openBreathingModal() {
+      document.getElementById('modal-breathing').classList.remove('hidden');
+      selectBreathingPattern('box');
+    }
+
+    function selectBreathingPattern(patternId) {
+      if (breathActive) stopBreathing();
+      breathPattern = patternId;
+      ['box', 'sleep', 'coherence'].forEach(p => {
+        const btn = document.getElementById(`btn-pattern-${p}`);
+        if (!btn) return;
+        const matches = (p === 'box' && patternId === 'box') || 
+                        (p === 'sleep' && patternId === 'sleep_478') || 
+                        (p === 'coherence' && patternId === 'coherence_55');
+        if (matches) {
+          btn.className = 'px-3 py-1 rounded-lg bg-teal-800 text-teal-200 font-semibold shadow';
+        } else {
+          btn.className = 'px-3 py-1 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)]';
+        }
+      });
+
+      const cfg = BREATH_CONFIGS[breathPattern];
+      document.getElementById('breath-phase-text').innerText = 'READY';
+      document.getElementById('breath-countdown').innerText = `${cfg.phases[0].duration}s`;
+      document.getElementById('breath-guide-text').innerText = 'Sit comfortably, soften your gaze, and press Begin.';
+      document.getElementById('breath-cycle-counter').innerText = `Cycle 0 of ${breathTargetCycles} Completed`;
+      document.getElementById('lotus-blooming-svg').style.transform = 'scale(1.0)';
+    }
+
+    function toggleBreathingSession() {
+      if (breathActive) {
+        stopBreathing();
+      } else {
+        startBreathing();
+      }
+    }
+
+    function startBreathing() {
+      breathActive = true;
+      breathCycle = 0;
+      breathPhaseIndex = 0;
+      const cfg = BREATH_CONFIGS[breathPattern];
+      const phase = cfg.phases[0];
+      breathPhaseRemaining = phase.duration;
+
+      const toggleBtn = document.getElementById('btn-breath-toggle');
+      if (toggleBtn) toggleBtn.innerHTML = '<span>⏸️</span> Pause Breathwork';
+
+      playSingingBowl(phase.tone, 3.5);
+      applyBreathPhaseVisuals(phase);
+
+      if (breathInterval) clearInterval(breathInterval);
+      breathInterval = setInterval(tickBreathing, 1000);
+    }
+
+    function stopBreathing() {
+      breathActive = false;
+      if (breathInterval) {
+        clearInterval(breathInterval);
+        breathInterval = null;
+      }
+      const toggleBtn = document.getElementById('btn-breath-toggle');
+      if (toggleBtn) toggleBtn.innerHTML = '<span>🌿</span> Begin Breathwork';
+      document.getElementById('breath-phase-text').innerText = 'PAUSED';
+      document.getElementById('lotus-blooming-svg').style.transform = 'scale(1.0)';
+    }
+
+    function applyBreathPhaseVisuals(phase) {
+      document.getElementById('breath-phase-text').innerText = phase.name.toUpperCase();
+      document.getElementById('breath-countdown').innerText = `${breathPhaseRemaining}s`;
+      document.getElementById('breath-guide-text').innerText = phase.guide;
+      document.getElementById('lotus-blooming-svg').style.transform = `scale(${phase.scale})`;
+      
+      const aura = document.getElementById('breath-aura');
+      if (phase.name === 'Inhale') {
+        aura.style.transform = 'scale(1.25)';
+        aura.style.borderColor = 'rgba(45, 212, 191, 0.6)';
+      } else if (phase.name === 'Hold') {
+        aura.style.transform = 'scale(1.25)';
+        aura.style.borderColor = 'rgba(250, 204, 21, 0.6)';
+      } else {
+        aura.style.transform = 'scale(0.85)';
+        aura.style.borderColor = 'rgba(45, 212, 191, 0.2)';
+      }
+    }
+
+    function tickBreathing() {
+      if (!breathActive) return;
+      breathPhaseRemaining--;
+      document.getElementById('breath-countdown').innerText = `${breathPhaseRemaining}s`;
+
+      if (breathPhaseRemaining <= 0) {
+        const cfg = BREATH_CONFIGS[breathPattern];
+        breathPhaseIndex++;
+        if (breathPhaseIndex >= cfg.phases.length) {
+          breathPhaseIndex = 0;
+          breathCycle++;
+          document.getElementById('breath-cycle-counter').innerText = `Cycle ${breathCycle} of ${breathTargetCycles} Completed`;
+          
+          if (breathCycle >= breathTargetCycles) {
+            completeBreathingSession();
+            return;
+          }
+        }
+
+        const nextPhase = cfg.phases[breathPhaseIndex];
+        breathPhaseRemaining = nextPhase.duration;
+        playSingingBowl(nextPhase.tone, 3.5);
+        applyBreathPhaseVisuals(nextPhase);
+      }
+    }
+
+    function completeBreathingSession() {
+      stopBreathing();
+      document.getElementById('breath-phase-text').innerText = 'HARMONIZED';
+      document.getElementById('breath-guide-text').innerText = '✨ Breathwork complete! Garden infused with holy prana vitality.';
+      document.getElementById('breath-countdown').innerText = '✦';
+      
+      blessGardenPrana();
+      dreamDew += 12;
+      updateDewDisplay();
+      playSfx('harvest');
+      notify('Completed Mindful Breathwork! (+12 Dream Dew)', '#2dd4bf');
+    }
+
+    function blessGardenPrana() {
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          const cell = grid[y][x];
+          if (cell.isTilled) {
+            cell.moisture = Math.max(cell.moisture, 0.85);
+            cell.hasWeed = false;
+            if (cell.plant && !cell.plant.isMature && !cell.plant.isWithered) {
+              cell.plant.progressHours += 6.0;
+              const pDef = PLANT_CATALOG[cell.plant.id];
+              const target = pDef.growHours[cell.plant.stage];
+              if (cell.plant.progressHours >= target) {
+                cell.plant.progressHours = 0;
+                cell.plant.stage++;
+                if (cell.plant.stage >= 3) {
+                  cell.plant.isMature = true;
+                }
+              }
+            }
+          }
+        }
+      }
+      renderGrid();
+      updateInspector(selectedTilePos.x, selectedTilePos.y);
+      playSingingBowl(528, 4.0);
+      playSfx('butterfly_chime');
+      notify('✨ Garden blessed with Prana! Moisture restored & crops energized.', '#2dd4bf');
+    }
+
+    // 2. SLEEP SANCTUARY & AMBIENT SOUNDSCAPES
+    function openSleepModal() {
+      document.getElementById('modal-sleep').classList.remove('hidden');
+    }
+
+    function setSleepIntention(btnElem, text) {
+      sleepIntention = text;
+      document.querySelectorAll('.sleep-intent-btn').forEach(b => {
+        b.className = 'sleep-intent-btn p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60 font-medium text-left text-slate-300';
+      });
+      btnElem.className = 'sleep-intent-btn active p-2.5 rounded-xl bg-indigo-800/70 border border-indigo-500/60 font-medium text-left';
+    }
+
+    function selectSoundscape(type) {
+      selectedSoundscapeId = type;
+      document.querySelectorAll('.sound-btn').forEach(b => {
+        b.className = 'sound-btn p-2 rounded-xl bg-slate-800/60 border border-slate-700/60 text-center flex flex-col items-center gap-1 text-slate-300';
+      });
+      event.currentTarget.className = 'sound-btn active p-2 rounded-xl bg-indigo-800/80 border border-indigo-500/70 text-center flex flex-col items-center gap-1 text-white';
+      
+      const labels = { rain: '🌧️ Soft Rain', crickets: '🦗 Crickets', bowl: '🥣 432Hz Bowl', pond: '🌊 Pond Water' };
+      document.getElementById('active-soundscape-label').innerText = labels[type] || type;
+      startAmbientSoundscape(type);
+    }
+
+    function enterSleepOverlay() {
+      closeModal('modal-sleep');
+      const overlay = document.getElementById('night-sleep-overlay');
+      overlay.classList.remove('hidden');
+      document.getElementById('night-overlay-intention').innerText = `Intention: ${sleepIntention}`;
+      
+      const labels = { rain: '🌧️ Soundscape: Night Rain', crickets: '🦗 Soundscape: Summer Crickets', bowl: '🥣 Soundscape: 432Hz Singing Bowl', pond: '🌊 Soundscape: Pond Ripples' };
+      document.getElementById('night-overlay-sound').innerText = labels[selectedSoundscapeId] || '🌧️ Soundscape: Rain';
+      
+      if (!ambientNodes.source && !ambientNodes.osc && !ambientNodes.interval) {
+        startAmbientSoundscape(selectedSoundscapeId);
+      }
+    }
+
+    function exitSleepOverlay() {
+      document.getElementById('night-sleep-overlay').classList.add('hidden');
+      stopAmbientSoundscape();
+      simulateAwayTime(8, false);
+    }
+
+    // 3. FOCUS GROVE COMPANION
+    function openFocusModal() {
+      document.getElementById('modal-focus').classList.remove('hidden');
+    }
+
+    function setFocusMinutes(mins) {
+      if (focusActive) stopFocus();
+      focusTargetMins = mins;
+      focusRemainingSec = mins * 60;
+      updateFocusClockDisplay();
+      
+      document.querySelectorAll('.focus-dur-btn').forEach(b => {
+        b.className = 'focus-dur-btn px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--secondary)]';
+      });
+      event.currentTarget.className = 'focus-dur-btn active px-3 py-1.5 rounded-lg bg-emerald-800 text-emerald-200 font-bold border border-emerald-600';
+    }
+
+    function toggleFocusSession() {
+      if (focusActive) {
+        stopFocus();
+      } else {
+        startFocus();
+      }
+    }
+
+    function startFocus() {
+      focusActive = true;
+      const btn = document.getElementById('btn-focus-toggle');
+      if (btn) btn.innerHTML = '<span>⏸️</span> Pause Focus Session';
+      
+      playSingingBowl(396, 3.0);
+      if (focusInterval) clearInterval(focusInterval);
+      focusInterval = setInterval(tickFocus, 1000);
+      notify('Focus session began. Your sacred Bodhi tree starts to grow...', '#34d399');
+    }
+
+    function stopFocus() {
+      focusActive = false;
+      if (focusInterval) {
+        clearInterval(focusInterval);
+        focusInterval = null;
+      }
+      const btn = document.getElementById('btn-focus-toggle');
+      if (btn) btn.innerHTML = '<span>🌱</span> Resume Focus Session';
+    }
+
+    function updateFocusClockDisplay() {
+      const m = Math.floor(focusRemainingSec / 60);
+      const s = focusRemainingSec % 60;
+      document.getElementById('focus-timer-clock').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function tickFocus() {
+      if (!focusActive) return;
+      if (activeTeaBuff.id === 'buff_focus_speed') {
+        focusRemainingSec = Math.max(0, focusRemainingSec - 2);
+      } else {
+        focusRemainingSec--;
+      }
+      updateFocusClockDisplay();
+
+      const totalTarget = focusTargetMins * 60;
+      const progress = Math.min(1.0, Math.max(0.0, 1.0 - (focusRemainingSec / totalTarget)));
+      document.getElementById('focus-progress-bar').style.width = `${progress * 100}%`;
+
+      const stageIdx = Math.min(4, Math.floor(progress * 4.9));
+      focusTreeStage = stageIdx;
+      const stageObj = FOCUS_TREE_STAGES[stageIdx];
+      document.getElementById('focus-tree-icon').innerText = stageObj.icon;
+      document.getElementById('focus-tree-stage').innerText = stageObj.name;
+
+      if (focusRemainingSec <= 0) {
+        completeFocusSession();
+      }
+    }
+
+    function completeFocusSession() {
+      stopFocus();
+      focusTreeStage = 4;
+      document.getElementById('focus-tree-icon').innerText = '🌸';
+      document.getElementById('focus-tree-stage').innerText = 'Sacred Golden Blossom';
+      document.getElementById('focus-timer-clock').innerText = 'COMPLETE';
+
+      // Sacred Compost Blessing across all tilled garden plots
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          const cell = grid[y][x];
+          if (cell.isTilled) {
+            cell.isFertilized = true;
+            cell.fertility = 1.0;
+          }
+        }
+      }
+      renderGrid();
+      dreamDew += 8;
+      updateDewDisplay();
+      playSingingBowl(528, 4.5);
+      playSfx('harvest');
+      notify('🌸 Focus session complete! Garden soil enriched with Organic Compost (+8 Dew).', '#34d399');
+    }
+
+    // 4. GENERATIVE ABSENCE & AWAY TIME PROGRESSION
+    function simulateAwayTime(hours, isSimulation = false) {
+      totalSleepHours += hours;
+      const simulatedDays = Math.max(1, Math.round(hours));
+      const isOvernight = hours >= 5;
+      let newDew = Math.max(1, Math.min(24, Math.round(hours * 2)));
+      if (activeTeaBuff.id === 'buff_sleep_dew') {
+        newDew = Math.round(newDew * 1.5);
+      }
+      dreamDew += newDew;
+      updateDewDisplay();
+
+      const maturedList = [];
+
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          const cell = grid[y][x];
+          if (cell.isTilled) {
+            // Generative Absence: moisture gently rests at pleasant dew level (min 0.35)
+            cell.moisture = Math.max(0.35, cell.moisture - 0.12 * simulatedDays);
+            if (isOvernight) {
+              cell.moisture = Math.max(cell.moisture, 0.55);
+            }
+            cell.daysWaterlogged = 0;
+          }
+
+          if (cell.plant && !cell.plant.isWithered && !cell.plant.isMature) {
+            const pDef = PLANT_CATALOG[cell.plant.id];
+            let rate = 2.0;
+            // Night-blooming starlight bonus!
+            if (isOvernight && (cell.plant.id === 'moonlit_violet' || cell.plant.id === 'glowcap_mushroom')) {
+              rate = 4.0;
+            }
+            cell.plant.progressHours += hours * rate;
+
+            while (cell.plant.stage < 3 && !cell.plant.isMature) {
+              const target = pDef.growHours[cell.plant.stage];
+              if (cell.plant.progressHours >= target) {
+                cell.plant.progressHours -= target;
+                cell.plant.stage++;
+                if (cell.plant.stage >= 3) {
+                  cell.plant.stage = 3;
+                  cell.plant.isMature = true;
+                  if (!maturedList.includes(pDef.name)) maturedList.push(pDef.name);
+                  break;
+                }
+              } else {
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      // Pond Sacred Lotus blooms gently
+      lotusBloomed = true;
+      const lotusElem = document.getElementById('lotus-flower');
+      if (lotusElem) lotusElem.style.display = 'block';
+
+      renderGrid();
+      updateInspector(selectedTilePos.x, selectedTilePos.y);
+
+      // Open Morning Dew Summary Modal
+      const modal = document.getElementById('modal-morning-dew');
+      if (modal) {
+        document.getElementById('morning-title').innerText = isOvernight ? '🌅 Dawn Awakening Sanctuary' : '🍃 Welcome Back, Gentle Gardener';
+        document.getElementById('morning-subtitle').innerText = isOvernight ? 'Gentle morning dew has moistened the earth and nourished your crops.' : 'Your garden rested and flourished in quiet stillness.';
+        document.getElementById('morning-hours').innerText = `${hours.toFixed(1)} Hours Away`;
+        document.getElementById('morning-dew').innerText = `✨ +${newDew} Dream Dew`;
+        document.getElementById('morning-crops').innerText = maturedList.length > 0 ? maturedList.join(', ') : 'Roots strengthened and soil replenished with dew.';
+        const randomQuote = BOTANICAL_REFLECTIONS[Math.floor(Math.random() * BOTANICAL_REFLECTIONS.length)];
+        document.getElementById('morning-quote').innerText = `"${randomQuote}"`;
+        modal.classList.remove('hidden');
+      }
+
+      playSingingBowl(432, 4.0);
+      playSfx('chime');
+      notify(`Awakened from rest! Collected +${newDew} Dream Dew drops.`, '#2dd4bf');
+    }
+
+    // Auto-save timestamp for real offline tracking
+    setInterval(() => {
+      try {
+        localStorage.setItem('verdant_haven_last_active', String(Date.now()));
+      } catch(e) {}
+    }, 10000);
+
+    // Check offline elapsed time on boot
+    try {
+      const lastActiveStr = localStorage.getItem('verdant_haven_last_active');
+      if (lastActiveStr) {
+        const lastTime = parseInt(lastActiveStr, 10);
+        const elapsedSec = (Date.now() - lastTime) / 1000;
+        if (elapsedSec > 180) { // More than 3 minutes away
+          const elapsedHrs = Math.min(24, elapsedSec / 3600);
+          setTimeout(() => {
+            simulateAwayTime(elapsedHrs, false);
+          }, 600);
+        }
+      }
+    } catch(e) {}
+
+    // Boot Game & Pond
+    initGridDOM();
+    initPondDOM();
+    renderHotbar();
+    updateDiscoveryProgress();
+    updateInspector(0, 0);
+    updateDewDisplay();
+
+    // Clock Interval
+    setInterval(() => {
+      for (let s = 0; s < timeSpeed; s++) {
+        gameTick();
+      }
+    }, 800);
+  </script>
+</body>
+</html>
