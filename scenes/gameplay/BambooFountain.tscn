@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://cbamboofountain001"]
+
+[ext_resource type="Script" path="res://scripts/gameplay/BambooFountain.gd" id="1_fountain"]
+[ext_resource type="Texture2D" path="res://assets/sprites/decor/bamboo_fountain.png" id="2_tex"]
+
+[node name="BambooFountain" type="Node2D"]
+script = ExtResource("1_fountain")
+
+[node name="BaseSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+
+[node name="RockerArm" type="Sprite2D" parent="."]
+position = Vector2(0, -2)
+texture = ExtResource("2_tex")
+region_enabled = true
+region_rect = Rect2(4, 10, 24, 14)

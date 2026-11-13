@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cgameworld001"]
+[gd_scene load_steps=18 format=3 uid="uid://cgameworld001"]
 
 [ext_resource type="Script" path="res://scripts/gameplay/GardenGrid.gd" id="1_grid"]
 [ext_resource type="Script" path="res://scripts/gameplay/DayNightCanvas.gd" id="2_daynight"]
@@ -15,6 +15,8 @@
 [ext_resource type="Script" path="res://scripts/ui/SleepModal.gd" id="13_sleep"]
 [ext_resource type="Script" path="res://scripts/ui/FocusModal.gd" id="14_focus"]
 [ext_resource type="Script" path="res://scripts/ui/MorningSummaryModal.gd" id="15_morning"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/BambooFountain.tscn" id="16_bamboo"]
+[ext_resource type="Script" path="res://scripts/ui/TeaBrewingModal.gd" id="17_tea_modal"]
 
 [node name="GameWorld" type="Node2D"]
 
@@ -23,6 +25,9 @@ script = ExtResource("2_daynight")
 
 [node name="Pond" parent="." instance=ExtResource("11_pond")]
 position = Vector2(270, 280)
+
+[node name="BambooFountain" parent="." instance=ExtResource("16_bamboo")]
+position = Vector2(170, 310)
 
 [node name="GardenGrid" type="Node2D" parent="."]
 position = Vector2(480, 230)
@@ -156,6 +161,17 @@ offset_right = -460.0
 offset_bottom = 38.0
 grow_horizontal = 0
 text = "🧘 Breathe"
+
+[node name="TeaBtn" type="Button" parent="HUD/TopBar"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -640.0
+offset_top = 6.0
+offset_right = -565.0
+offset_bottom = 38.0
+grow_horizontal = 0
+text = "🍵 Tea"
 
 [node name="NotificationContainer" type="VBoxContainer" parent="HUD"]
 anchors_preset = 2
@@ -618,9 +634,98 @@ horizontal_alignment = 1
 layout_mode = 2
 text = "Collect & Tend Garden"
 
+[node name="TeaBrewingModal" type="Control" parent="HUD"]
+visible = false
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -220.0
+offset_right = 300.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("17_tea_modal")
+
+[node name="Panel" type="Panel" parent="HUD/TeaBrewingModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CloseBtn" type="Button" parent="HUD/TeaBrewingModal/Panel"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = 38.0
+grow_horizontal = 0
+text = "✕"
+
+[node name="HSplit" type="HSplitContainer" parent="HUD/TeaBrewingModal/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 40.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RecipeList" type="ItemList" parent="HUD/TeaBrewingModal/Panel/HSplit"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="DetailVBox" type="VBoxContainer" parent="HUD/TeaBrewingModal/Panel/HSplit"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="HUD/TeaBrewingModal/Panel/HSplit/DetailVBox"]
+layout_mode = 2
+text = "🍵 Serene Dream Tea"
+
+[node name="DescLabel" type="Label" parent="HUD/TeaBrewingModal/Panel/HSplit/DetailVBox"]
+layout_mode = 2
+text = "A fragrant calming herbal blend."
+autowrap_mode = 2
+
+[node name="IngredientsLabel" type="Label" parent="HUD/TeaBrewingModal/Panel/HSplit/DetailVBox"]
+layout_mode = 2
+text = "Required Ingredients: Lavender x1, Chamomile x1"
+
+[node name="BuffLabel" type="Label" parent="HUD/TeaBrewingModal/Panel/HSplit/DetailVBox"]
+layout_mode = 2
+text = "Effect: Serene Slumber (+50% Overnight Dew)"
+
+[node name="OwnedLabel" type="Label" parent="HUD/TeaBrewingModal/Panel/HSplit/DetailVBox"]
+layout_mode = 2
+text = "In Inventory: 0 Cups"
+
+[node name="Buttons" type="HBoxContainer" parent="HUD/TeaBrewingModal/Panel/HSplit/DetailVBox"]
+layout_mode = 2
+
+[node name="BrewBtn" type="Button" parent="HUD/TeaBrewingModal/Panel/HSplit/DetailVBox/Buttons"]
+layout_mode = 2
+text = "Steep & Brew (Kettle)"
+
+[node name="DrinkBtn" type="Button" parent="HUD/TeaBrewingModal/Panel/HSplit/DetailVBox/Buttons"]
+layout_mode = 2
+text = "Sip Tea"
+
 [connection signal="pressed" from="HUD/TopBar/ShopBtn" to="HUD" method="_on_shop_button_pressed"]
 [connection signal="pressed" from="HUD/TopBar/AlmanacBtn" to="HUD" method="_on_almanac_button_pressed"]
 [connection signal="pressed" from="HUD/TopBar/BreatheBtn" to="HUD" method="_on_breathe_button_pressed"]
+[connection signal="pressed" from="HUD/TopBar/TeaBtn" to="HUD" method="_on_tea_button_pressed"]
 [connection signal="pressed" from="HUD/TopBar/SleepBtn" to="HUD" method="_on_sleep_button_pressed"]
 [connection signal="pressed" from="HUD/TopBar/FocusBtn" to="HUD" method="_on_focus_button_pressed"]
 [connection signal="pressed" from="HUD/BreathingModal/Panel/CloseBtn" to="HUD/BreathingModal" method="_on_close_btn_pressed"]
@@ -631,3 +736,7 @@ text = "Collect & Tend Garden"
 [connection signal="pressed" from="HUD/FocusModal/Panel/CloseBtn" to="HUD/FocusModal" method="_on_close_btn_pressed"]
 [connection signal="pressed" from="HUD/FocusModal/Panel/VBox/ActionBtn" to="HUD/FocusModal" method="_on_action_btn_pressed"]
 [connection signal="pressed" from="HUD/MorningSummaryModal/Panel/VBox/CloseBtn" to="HUD/MorningSummaryModal" method="_on_close_button_pressed"]
+[connection signal="pressed" from="HUD/TeaBrewingModal/Panel/CloseBtn" to="HUD/TeaBrewingModal" method="_on_close_btn_pressed"]
+[connection signal="item_selected" from="HUD/TeaBrewingModal/Panel/HSplit/RecipeList" to="HUD/TeaBrewingModal" method="_on_recipe_selected"]
+[connection signal="pressed" from="HUD/TeaBrewingModal/Panel/HSplit/DetailVBox/Buttons/BrewBtn" to="HUD/TeaBrewingModal" method="_on_brew_btn_pressed"]
+[connection signal="pressed" from="HUD/TeaBrewingModal/Panel/HSplit/DetailVBox/Buttons/DrinkBtn" to="HUD/TeaBrewingModal" method="_on_drink_btn_pressed"]

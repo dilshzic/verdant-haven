@@ -36,3 +36,10 @@ signal sleep_sanctuary_awakened(summary: Dictionary)
 signal focus_grove_started(duration_minutes: int)
 signal focus_grove_completed(completed_minutes: int, tree_stage: int)
 signal garden_blessed(blessing_type: String)
+
+# Apothecary & Nocturnal Wildlife Signals
+signal tea_brewed(tea_id: String, tea_name: String)
+signal tea_consumed(tea_id: String, buff_name: String, duration_sec: float)
+signal bamboo_fountain_clacked()
+signal firefly_collected(dew_awarded: int)
+signal lunar_moth_pollinated(grid_pos: Vector2i)

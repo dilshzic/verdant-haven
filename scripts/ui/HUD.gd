@@ -14,6 +14,7 @@ extends CanvasLayer
 @onready var sleep_modal: Control = $SleepModal if has_node("SleepModal") else null
 @onready var focus_modal: Control = $FocusModal if has_node("FocusModal") else null
 @onready var morning_modal: Control = $MorningSummaryModal if has_node("MorningSummaryModal") else null
+@onready var tea_modal: Control = $TeaBrewingModal if has_node("TeaBrewingModal") else null
 
 func _ready() -> void:
 	SignalBus.time_ticked.connect(_on_time_ticked)
@@ -102,3 +103,10 @@ func _on_focus_button_pressed() -> void:
 func _on_simulate_sleep_button_pressed(hours: float) -> void:
 	if has_node("/root/OfflineGrowthManager"):
 		get_node("/root/OfflineGrowthManager").simulate_offline_hours(hours)
+
+func _on_tea_button_pressed() -> void:
+	if tea_modal:
+		if tea_modal.has_method("open") and not tea_modal.visible:
+			tea_modal.open()
+		else:
+			tea_modal.visible = not tea_modal.visible

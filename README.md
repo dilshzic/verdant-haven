@@ -182,3 +182,42 @@ Verdant Haven is designed around the core philosophy of **Generative Absence**:
 * **Zero Guilt Guarantee:** Navigating away or taking a break will never kill or wither your tree.
 * **Compost Reward:** Completing a focus session rewards +8 Dream Dew and blesses every garden bed with rich organic compost.
 
+---
+
+## 🍵 Botanical Apothecary & Herbal Tea Brewing Station (`ApothecaryManager.gd`)
+
+Craft wellness teas from dried blossoms, medicinal herbs, and sacred lotus petals harvested from your garden beds:
+
+| Tea Recipe | Ingredients | Artisanal Buff Effect | Duration |
+|---|---|---|---|
+| **🪻 Serene Dream Tea** | 1x Fragrant Lavender, 1x Sun Chamomile | **Serene Slumber:** +50% extra Dream Dew upon morning awakening | 5 min |
+| **🍵 Mint Lotus Clarity Brew** | 1x Brisk Peppermint, 1x Sacred Lotus Petals | **Zen Clarity:** 2x faster Bonsai Focus Grove progression | 4 min |
+| **☀️ Radiant Solar Brew** | 1x Golden Marigold, 1x Scarlet Poppy, 1x Dewberry | **Solar Aura:** Protects delicate crops from cold rain and mystical fog | 6 min |
+| **✨ Twilight Dream Cordial** | 1x Moonlit Violet, 1x Brisk Peppermint | **Lunar Radiance:** Attracts shimmering Fireflies & Lunar Silk Moths | 5 min |
+| **🍯 Golden Bodhi Nectar** | 1x Solar Honeydew Melon, 1x Azure Star Lily | **Flora Vitality:** +40% garden-wide botanical growth speed | 5 min |
+
+* **Interactive Steeping Station:** Open the Apothecary from the top bar to inspect pantry stock, check required floral ingredients, and brew or sip soothing teas with custom steam wisps and gentle acoustic sipping audio.
+
+---
+
+## 🎋 Zen Bamboo Shishi-Odoshi Water Fountain (`BambooFountain.gd`)
+
+Located beside the peaceful koi and lotus pond:
+* **Authentic Japanese Rocker Fountain:** Water slowly trickles from a raised bamboo spout into the hollow bamboo rocker arm.
+* **Tipping Dynamics:** As water weight accumulates, the rocker arm smoothly tilts forward until the water cascades out with a gentle splash.
+* **Resonant Wooden Clack:** Relieved of water, the heavy counterweight snaps the bamboo arm back down to strike a river stone basin with an acoustic wooden **CLACK**, synthesized via custom formant frequencies (310Hz & 480Hz).
+* **Interactive & Meditative:** Click the rocker arm or the `[🎋 Clack]` button at any moment to manually trigger the calming strike.
+
+---
+
+## ✨ Nocturnal Wildlife Ecosystem (`Firefly.gd`, `LunarMoth.gd`)
+
+When twilight falls (7:00 PM – 5:00 AM) or when the **Twilight Dream Cordial** is enjoyed, the garden transforms into a starlit fae sanctuary:
+* **✨ Bioluminescent Fireflies:**
+  * Sine-wave glowing yellow-green embers float over garden beds.
+  * **Interactive Gathering:** Click any floating firefly to gently collect it, earning **+1 Dream Dew** and triggering a sparkling starlight chime.
+* **🌙 Lunar Silk Moths:**
+  * Majestic iridescent moths with lavender eyespots that flutter towards nocturnal flowers (*Moonlit Violet*, *Bioluminescent Glowcap*).
+  * Disperses sparkling **Moon Dust** over nearby crops, granting an instant +2 hour growth acceleration!
+
+

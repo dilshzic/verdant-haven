@@ -3,6 +3,8 @@ extends Node2D
 
 @export var butterfly_scene: PackedScene
 @export var bird_scene: PackedScene
+@export var firefly_scene: PackedScene
+@export var lunar_moth_scene: PackedScene
 @export var garden_grid: GardenGrid
 @export var player_node: Node2D
 
@@ -14,6 +16,10 @@ func _ready() -> void:
 		butterfly_scene = preload("res://scenes/entities/Butterfly.tscn")
 	if not bird_scene:
 		bird_scene = preload("res://scenes/entities/Bird.tscn")
+	if not firefly_scene:
+		firefly_scene = preload("res://scenes/entities/Firefly.tscn")
+	if not lunar_moth_scene:
+		lunar_moth_scene = preload("res://scenes/entities/LunarMoth.tscn")
 	SignalBus.weather_changed.connect(_on_weather_changed)
 
 func _process(delta: float) -> void:
@@ -28,9 +34,13 @@ func evaluate_wildlife_spawn() -> void:
 		
 	var hour = TimeManager.game_hour
 	var weather = TimeManager.current_weather
+	var is_night = hour >= 19 or hour <= 5
+	var has_night_tea_buff = false
+	if has_node("/root/ApothecaryManager"):
+		has_night_tea_buff = (get_node("/root/ApothecaryManager").active_buff_id == "buff_night_fauna")
 	
 	# Rain suppresses butterflies and birds
-	if weather == "Rainy":
+	if weather == "Rainy" and not has_night_tea_buff:
 		return
 		
 	# 1. Daytime Butterflies (Hours 8 to 18)
@@ -43,6 +53,14 @@ func evaluate_wildlife_spawn() -> void:
 	if (hour >= 6 and hour <= 11) or (hour >= 15 and hour <= 18):
 		if randf() < 0.40:
 			spawn_visiting_bird()
+			
+	# 3. Nocturnal Fireflies (Night hours 19 to 5, or Twilight Cordial Buff)
+	if (is_night or has_night_tea_buff) and randf() < 0.70:
+		spawn_firefly()
+		
+	# 4. Rare Lunar Silk Moth (Attracted to night-blooming flowers or tea buff)
+	if (is_night or has_night_tea_buff) and randf() < 0.45:
+		spawn_lunar_moth()
 
 func find_blooming_flower_pos() -> Vector2:
 	# Search garden grid for blooming flowers or herbs
@@ -92,6 +110,26 @@ func spawn_visiting_bird() -> void:
 	
 	add_child(b)
 	b.setup(chosen_type, start_pos, landing_pos, player_node)
+
+func spawn_firefly() -> void:
+	if not firefly_scene or not garden_grid:
+		return
+	var rx = randi_range(0, GardenGrid.GRID_WIDTH - 1)
+	var ry = randi_range(0, GardenGrid.GRID_HEIGHT - 1)
+	var plot_pos = garden_grid.to_global(Vector2(
+		rx * GardenGrid.TILE_SIZE + GardenGrid.TILE_SIZE / 2.0,
+		ry * GardenGrid.TILE_SIZE + GardenGrid.TILE_SIZE / 2.0
+	))
+	var f = firefly_scene.instantiate()
+	f.position = plot_pos + Vector2(randf_range(-15, 15), randf_range(-15, 15))
+	add_child(f)
+
+func spawn_lunar_moth() -> void:
+	if not lunar_moth_scene:
+		return
+	var m = lunar_moth_scene.instantiate()
+	m.position = Vector2(randf_range(200, 1000), -50)
+	add_child(m)
 
 func _on_weather_changed(_weather: String) -> void:
 	pass

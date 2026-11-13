@@ -140,3 +140,31 @@ func spend_coins(amount: int) -> bool:
 		SignalBus.coins_changed.emit(coins)
 		return true
 	return false
+
+func get_item_count(item_id: String) -> int:
+	var total = 0
+	for slot in hotbar:
+		if slot.get("id", "") == item_id:
+			total += slot.get("count", 0)
+	if inventory.has(item_id):
+		total += inventory[item_id]
+	return total
+
+func remove_item(item_id: String, count: int) -> bool:
+	if get_item_count(item_id) < count:
+		return false
+	var remaining = count
+	for i in range(hotbar.size()):
+		if hotbar[i].get("id", "") == item_id:
+			var slot_count = hotbar[i].get("count", 0)
+			if slot_count <= remaining:
+				remaining -= slot_count
+				hotbar[i] = {"id": "", "type": "empty", "name": "Empty Slot", "count": 0, "icon_path": ""}
+			else:
+				hotbar[i]["count"] -= remaining
+				remaining = 0
+				break
+	if remaining > 0 and inventory.has(item_id):
+		inventory[item_id] = max(0, inventory[item_id] - remaining)
+	SignalBus.inventory_changed.emit()
+	return true
